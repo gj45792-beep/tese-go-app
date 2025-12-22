@@ -1,0 +1,26 @@
+// src/router/routes.ts
+import { RouteRecordRaw } from 'vue-router';
+
+const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/',
+    redirect: '/welcome'
+  },
+  {
+    path: '/welcome',
+    name: 'Welcome',
+    component: () => import('../views/public/WelcomePage.vue')
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/public/LoginPage.vue')
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: () => import('../views/auth/HomePage.vue')
+  }
+];
+
+export default routes;

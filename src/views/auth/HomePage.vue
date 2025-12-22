@@ -1,0 +1,438 @@
+<template>
+  <ion-page>
+    <!-- Header mejorado con geolocalización -->
+    <ion-header>
+      <ion-toolbar class="tese-green-bg">
+        <ion-buttons slot="start">
+          <ion-button @click="openQuickNav" aria-label="Navegación rápida">
+            <ion-icon :icon="compass" color="light" />
+          </ion-button>
+        </ion-buttons>
+        
+        <div class="header-content">
+          <ion-title class="app-title">
+            <span class="gold-text">TESE</span> GO
+            <ion-badge color="light" v-if="currentBuilding">
+              {{ currentBuilding }}
+            </ion-badge>
+          </ion-title>
+          <div class="current-location">
+            <ion-icon :icon="location" color="light" />
+            <span>{{ nearestLandmark || 'TESE Ecatepec' }}</span>
+          </div>
+        </div>
+        
+        <ion-buttons slot="end">
+          <ion-button @click="openNotifications" aria-label="Notificaciones">
+            <ion-icon :icon="notifications" color="light" />
+            <ion-badge color="danger" v-if="notificationCount > 0">
+              {{ notificationCount }}
+            </ion-badge>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Contenido principal -->
+    <ion-content class="ion-padding app-content">
+      <!-- Sección Hero con accesos directos -->
+      <div class="hero-section">
+        <h1 class="hero-title">¡Bienvenido{{ user.name ? ', ' + user.name : '' }}!</h1>
+        <p class="hero-subtitle">¿A dónde deseas ir hoy?</p>
+        
+        <div class="quick-access-grid">
+          <div 
+            v-for="(shortcut, index) in quickAccess"
+            :key="index"
+            class="shortcut-card"
+            :style="{ 'background': shortcut.color }"
+            @click="handleShortcut(shortcut.action)"
+          >
+            <ion-icon :icon="shortcut.icon" />
+            <span>{{ shortcut.label }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección de eventos inteligente -->
+      <div class="smart-events-container glass-card">
+        <ion-segment v-model="eventViewMode" @ionChange="changeEventView">
+          <ion-segment-button value="timeline">
+            <ion-label>Próximos eventos</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="map">
+            <ion-label>Ver en mapa</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <!-- Vista de timeline -->
+        <div v-if="eventViewMode === 'timeline'" class="timeline-view">
+          <div 
+            v-for="event in filteredFeaturedEvents" 
+            :key="event.id" 
+            class="event-card"
+            @click="goToEventDetail(event.id)"
+          >
+            <div class="event-time">
+              {{ event.time }}
+            </div>
+            <div class="event-details">
+              <h3>{{ event.title }}</h3>
+              <p class="event-location">
+                <ion-icon :icon="location" /> {{ event.location }}
+              </p>
+              <div class="event-tags">
+                <ion-chip :color="getCategoryColor(event.categoryId)" outline>
+                  {{ getCategoryName(event.categoryId) }}
+                </ion-chip>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vista de mapa (placeholder) -->
+        <div v-else class="map-preview">
+          <img 
+            src="https://maps.googleapis.com/maps/api/staticmap?center=TESE,Ecatepec&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7CTESE,Ecatepec" 
+            alt="Mapa del TESE"
+            class="map-image"
+          >
+          <ion-button 
+            expand="block" 
+            fill="clear"
+            @click="goToMap"
+          >
+            Ver mapa completo
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Asistente de rutas flotante -->
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button @click="openSmartAssistant" color="gold">
+          <ion-icon :icon="sparkles" />
+        </ion-fab-button>
+        
+        <ion-fab-list side="top">
+          <ion-fab-button 
+            v-for="(feature, index) in smartFeatures"
+            :key="index"
+            color="light"
+            @click="feature.action"
+          >
+            <ion-icon :icon="feature.icon" />
+            <ion-label>{{ feature.label }}</ion-label>
+          </ion-fab-button>
+        </ion-fab-list>
+      </ion-fab>
+    </ion-content>
+  </ion-page>
+</template>
+
+<script setup lang="ts">
+import { 
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, 
+  IonButton, IonIcon, IonBadge, IonButtons, IonChip,
+  IonLabel, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonFabList
+} from '@ionic/vue';
+import { 
+  notifications, compass, location, sparkles,
+  school, trophy, people, accessibility, carSport,
+  map as mapIcon, calendar, time, walk
+} from 'ionicons/icons';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '../../stores/auth.store';
+import { ref, computed, onMounted } from 'vue';
+
+const router = useRouter();
+const authStore = useAuthStore();
+
+// Datos del usuario
+const user = computed(() => authStore.user || { name: '', role: 'guest' });
+
+// Configuración de UI
+const eventViewMode = ref('timeline');
+const notificationCount = ref(2);
+const currentBuilding = ref('Edificio A');
+const nearestLandmark = ref('Biblioteca Central');
+
+// Accesos rápidos
+const quickAccess = ref([
+  { 
+    icon: mapIcon, 
+    label: 'Mapa', 
+    color: 'var(--ion-color-tese-green)', 
+    action: () => router.push('/map') 
+  },
+  { 
+    icon: school, 
+    label: 'Aulas', 
+    color: 'var(--ion-color-primary)', 
+    action: () => router.push('/locations/classrooms') 
+  },
+  { 
+    icon: accessibility, 
+    label: 'Rutas accesibles', 
+    color: 'var(--ion-color-tese-mint)', 
+    action: () => router.push('/accessible-routes') 
+  },
+  { 
+    icon: carSport, 
+    label: 'Estacionamiento', 
+    color: 'var(--ion-color-tese-sky)', 
+    action: () => router.push('/parking') 
+  }
+]);
+
+// Asistente inteligente
+const smartFeatures = ref([
+  {
+    icon: accessibility,
+    label: 'Ruta accesible',
+    action: () => router.push('/navigation?type=accessible')
+  },
+  {
+    icon: walk,
+    label: 'A pie',
+    action: () => router.push('/navigation?type=walking')
+  },
+  {
+    icon: carSport,
+    label: 'En auto',
+    action: () => router.push('/navigation?type=driving')
+  }
+]);
+
+// Eventos (simplificado para el ejemplo)
+const filteredFeaturedEvents = ref([
+  {
+    id: 1,
+    title: 'Feria de Ciencias 2025',
+    time: '10:00 AM',
+    location: 'Auditorio Principal',
+    categoryId: 'academic'
+  },
+  {
+    id: 2,
+    title: 'Torneo Deportivo',
+    time: '3:00 PM',
+    location: 'Canchas Deportivas',
+    categoryId: 'sports'
+  },
+  {
+    id: 3,
+    title: 'Festival Cultural',
+    time: '4:00 PM',
+    location: 'Plaza Central',
+    categoryId: 'cultural'
+  }
+]);
+
+// Métodos
+const getCategoryName = (id: string) => {
+  const categories: Record<string, string> = {
+    academic: 'Académico',
+    sports: 'Deportivo',
+    cultural: 'Cultural'
+  };
+  return categories[id] || 'Evento';
+};
+
+const getCategoryColor = (id: string) => {
+  const colors: Record<string, string> = {
+    academic: 'primary',
+    sports: 'success',
+    cultural: 'warning'
+  };
+  return colors[id] || 'medium';
+};
+
+const openSmartAssistant = () => {
+  console.log('Asistente activado');
+};
+
+const goToMap = () => router.push('/map');
+const goToEventDetail = (id: number) => router.push(`/event-detail/${id}`);
+const openNotifications = () => router.push('/notifications');
+const openQuickNav = () => router.push('/quick-nav');
+const handleShortcut = (action: Function) => action();
+const changeEventView = () => console.log('Cambiando vista:', eventViewMode.value);
+
+// Simular carga de datos
+onMounted(() => {
+  setTimeout(() => {
+    notificationCount.value = 0;
+  }, 3000);
+});
+</script>
+
+<style scoped>
+/* Variables de diseño */
+:root {
+  --tese-elevation-1: 0 1px 3px rgba(0,0,0,0.12);
+  --tese-elevation-2: 0 4px 6px rgba(0,0,0,0.16);
+  --tese-corner-radius: 16px;
+  --ion-color-tese-sky: #68c5ff;
+  --ion-color-tese-mint: #5de2a3;
+}
+
+/* Header mejorado */
+.tese-green-bg {
+  --background: var(--ion-color-tese-green);
+  --color: white;
+  padding-top: env(safe-area-inset-top);
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.app-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.current-location {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.9;
+}
+
+/* Sección Hero */
+.hero-section {
+  background: linear-gradient(135deg, var(--ion-color-tese-green) 0%, #1a5f3e 100%);
+  border-radius: var(--tese-corner-radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.hero-subtitle {
+  margin: 0.5rem 0 1.5rem;
+  opacity: 0.9;
+}
+
+.quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.shortcut-card {
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.shortcut-card:active {
+  transform: scale(0.95);
+}
+
+.shortcut-card ion-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.shortcut-card span {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Contenedor de eventos */
+.glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--tese-corner-radius);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--tese-elevation-1);
+}
+
+/* Timeline de eventos */
+.timeline-view {
+  margin-top: 1rem;
+}
+
+.event-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.event-card:last-child {
+  border-bottom: none;
+}
+
+.event-time {
+  font-weight: 600;
+  color: var(--ion-color-primary);
+  min-width: 70px;
+}
+
+.event-details {
+  flex: 1;
+}
+
+.event-details h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+}
+
+.event-location {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.event-tags {
+  margin-top: 0.5rem;
+}
+
+/* Vista de mapa */
+.map-preview {
+  margin-top: 1rem;
+}
+
+.map-image {
+  width: 100%;
+  border-radius: 12px;
+  height: 180px;
+  object-fit: cover;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .quick-access-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .hero-section {
+    padding: 2rem;
+  }
+}
+</style>

@@ -1,2 +1,96 @@
-/* For information on how to create your own theme, please refer to:
+/* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+/* Agrega estos estilos al archivo existente */
+/* src/theme/variables.css */
+:root {
+  /* Colores institucionales TESE */
+  --ion-color-tese-green: #2E7D32;    /* Verde bosque */
+  --ion-color-tese-red: #8E0000;      /* Rojo vino */
+  --ion-color-tese-gold: #FFD600;     /* Amarillo dorado */
+  
+  /* Paleta principal */
+  --ion-color-primary: var(--ion-color-tese-green);
+  --ion-color-primary-rgb: 46,125,50;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255,255,255;
+  --ion-color-primary-shade: #286e2c;
+  --ion-color-primary-tint: #438a47;
+  
+  --ion-color-secondary: var(--ion-color-tese-red);
+  --ion-color-secondary-rgb: 142,0,0;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255,255,255;
+  --ion-color-secondary-shade: #7d0000;
+  --ion-color-secondary-tint: #991a1a;
+  
+  --ion-color-tertiary: var(--ion-color-tese-gold);
+  --ion-color-tertiary-rgb: 255,214,0;
+  --ion-color-tertiary-contrast: #000000;
+  --ion-color-tertiary-contrast-rgb: 0,0,0;
+  --ion-color-tertiary-shade: #e0bc00;
+  --ion-color-tertiary-tint: #ffda1a;
+  
+  /* Componentes específicos */
+  --ion-toolbar-background: var(--ion-color-primary);
+  --ion-toolbar-color: var(--ion-color-primary-contrast);
+  
+  /* Tipografía */
+  --ion-font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  
+  /* Pie de página */
+  --footer-background: linear-gradient(to right, var(--ion-color-primary), var(--ion-color-secondary));
+  --footer-text-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Clases utilitarias para colores */
+.tese-green-bg {
+  background: var(--ion-color-tese-green);
+}
+.tese-red-bg {
+  background: var(--ion-color-tese-red);
+}
+.tese-gold-bg {
+  background: var(--ion-color-tese-gold);
+}
+.tese-green-text {
+  color: var(--ion-color-tese-green);
+}
+.tese-red-text {
+  color: var(--ion-color-tese-red);
+}
+.tese-gold-text {
+  color: var(--ion-color-tese-gold);
+}
+
+/* Pie de página global */
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--footer-background);
+  color: var(--footer-text-color);
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 0.75rem;
+  z-index: 1000;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+}
+/* Gradiente específico para WelcomePage */
+.welcome-gradient {
+  --background: linear-gradient(160deg, var(--ion-color-tese-green) 0%, #1B5E20 100%);
+}
+
+/* Botones específicos para WelcomePage */
+.welcome-primary-button {
+  --background: var(--ion-color-tese-green);
+  --background-hover: var(--ion-color-primary-shade);
+  --background-activated: var(--ion-color-primary-shade);
+  --box-shadow: 0 4px 8px rgba(46, 125, 50, 0.4);
+}
+
+.welcome-outline-button {
+  --color: var(--ion-color-tese-gold);
+  --border-color: var(--ion-color-tese-gold);
+  --background-hover: rgba(255, 214, 0, 0.1);
+}
