@@ -1,29 +1,11 @@
-// src/stores/auth.store.ts
+// src/stores/auth.store.ts - VERSIÓN CORREGIDA
 import { defineStore } from 'pinia';
-import { loginWithProvider, mockLoginWithOutlook } from '@/services/auth.service'; // Añade el mock
-
-type GuestType = 'external' | 'alumni' | 'prospective_student';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  guestType?: GuestType;
-  provider?: string;
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  isGuest: boolean;
-  isAuthenticated: boolean;
-}
+import { loginWithProvider, mockLoginWithOutlook } from '../services/auth/auth.service';
 
 export const useAuthStore = defineStore('auth', {
-  state: (): AuthState => ({
-    user: null,
-    token: null,
+  state: () => ({
+    user: null as any,
+    token: null as string | null,
     isGuest: false,
     isAuthenticated: false
   }),
@@ -31,55 +13,69 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async firebaseLogin(provider: 'google' | 'facebook' | 'outlook') {
       try {
-        const { uid, email, displayName } = await loginWithProvider(provider);
-        this.setAuthData(
-          {
-            id: uid,
-            email: email,
-            name: displayName,
-            role: 'user',
-            provider: provider
-          },
-          'firebase-token',
-          false
-        );
-      } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        throw new Error(`Error con ${provider}: ${message}`);
+        console.log(`Iniciando firebaseLogin con ${provider}...`);
+        
+        // Si es outlook, usa el mock por ahora
+        if (provider === 'outlook') {
+          return await this.mockOutlookLogin();
+        }
+        
+        // Para google/facebook, usa Firebase real
+        const userData = await loginWithProvider(provider);
+        
+        // Guardar datos en el store
+        this.user = {
+          id: userData.uid,
+          email: userData.email,
+          name: userData.displayName,
+          role: 'user',
+          provider: provider
+        };
+        this.token = 'firebase-token-' + provider;
+        this.isAuthenticated = true;
+        
+        // Guardar en localStorage
+        localStorage.setItem('auth_data', JSON.stringify({
+          user: this.user,
+          token: this.token,
+          timestamp: new Date().getTime()
+        }));
+        
+        console.log('Login exitoso:', this.user.email);
+        
+      } catch (error: any) {
+        console.error('Error en firebaseLogin:', error);
+        throw error;
       }
     },
 
-    // Nueva acción para mock de Outlook
     async mockOutlookLogin() {
       try {
-        const { uid, email, displayName } = await mockLoginWithOutlook();
-        this.setAuthData(
-          {
-            id: "mock-uid",
-            email: "Usuario de Prueba",
-            name: "usuario@tese.edu.mx",
-            role: 'user',
-            provider: 'outlook'
-          },
-          'mock-token',
-          false
-        );
-      } catch (error) {
-        throw new Error(`Error en mock: ${error instanceof Error ? error.message : String(error)}`);
+        console.log('Usando mockOutlookLogin...');
+        const userData = await mockLoginWithOutlook();
+        
+        this.user = {
+          id: userData.uid,
+          email: userData.email,
+          name: userData.displayName,
+          role: 'user',
+          provider: 'outlook'
+        };
+        this.token = 'mock-outlook-token';
+        this.isAuthenticated = true;
+        
+        localStorage.setItem('auth_data', JSON.stringify({
+          user: this.user,
+          token: this.token,
+          timestamp: new Date().getTime()
+        }));
+        
+        console.log('Mock login exitoso:', this.user.email);
+        
+      } catch (error: any) {
+        console.error('Error en mockOutlookLogin:', error);
+        throw error;
       }
-    },
-
-    setAuthData(user: User, token: string, isGuest: boolean) {
-      this.user = user;
-      this.token = token;
-      this.isGuest = isGuest;
-      this.isAuthenticated = true;
-      localStorage.setItem('auth_data', JSON.stringify({
-        user,
-        token,
-        isGuest,
-        timestamp: new Date().getTime()
-      }));
     },
 
     logout() {
@@ -88,27 +84,6 @@ export const useAuthStore = defineStore('auth', {
       this.isGuest = false;
       this.isAuthenticated = false;
       localStorage.removeItem('auth_data');
-    },
-
-    initialize() {
-      const authData = localStorage.getItem('auth_data');
-      if (authData) {
-        try {
-          const { user, token, isGuest, timestamp } = JSON.parse(authData);
-          const TWELVE_HOURS = 12 * 60 * 60 * 1000;
-          if (new Date().getTime() - timestamp > TWELVE_HOURS) {
-            this.logout();
-            return;
-          }
-          this.user = user;
-          this.token = token;
-          this.isGuest = isGuest;
-          this.isAuthenticated = true;
-        } catch (error) {
-          console.error('Error al inicializar sesión:', error);
-          this.logout();
-        }
-      }
     }
   }
 });

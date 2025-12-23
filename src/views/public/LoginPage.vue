@@ -116,56 +116,12 @@
         </div>
       </section>
 
-      <section class="social-section card">
+            <section class="social-section card">
         <h2 tabindex="0"><ion-icon :icon="globe" color="primary" /> ACCESO RÁPIDO</h2>
-        <div class="social-buttons">
-          <ion-button 
-            fill="clear" 
-            class="social-button" 
-            @click="handleQuickAccess('google')"
-            :disabled="isLoading"
-            aria-label="Acceso rápido con Google"
-          >
-            <ion-icon :icon="logoGoogle" size="large" style="color: #730617" />
-          </ion-button>
-          <ion-button 
-            fill="clear" 
-            class="social-button" 
-            @click="handleQuickAccess('facebook')"
-            :disabled="isLoading"
-            aria-label="Acceso rápido con Facebook"
-          >
-            <ion-icon :icon="logoFacebook" size="large" style="color: #730617" />
-          </ion-button>
-          <ion-button 
-            fill="clear" 
-            class="social-button" 
-            @click="handleMockOutlook"
-            :disabled="isLoading"
-            aria-label="Acceso rápido con Outlook (Simulado)"
-          >
-            <ion-icon :icon="mail" size="large" style="color: #730617" />
-          </ion-button>
-          <!--  
-          <ion-button 
-            fill="clear" 
-            class="social-button" 
-            @click="handleQuickAccess('twitter')"
-            :disabled="isLoading"
-            aria-label="Acceso rápido con Twitter"
-          >
-            <ion-icon :icon="logoTwitter" size="large" style="color: #730617" />
-          </ion-button>
-          <ion-button 
-            fill="clear" 
-            class="social-button" 
-            @click="handleQuickAccess('x')"
-            :disabled="isLoading"
-            aria-label="Acceso rápido con X"
-          >
-            <ion-icon :icon="logoX" size="large" style="color: #730617" />
-          </ion-button>  -->
-        </div>
+        <SocialLoginButtons 
+          :isLoading="isLoading"
+          @social-login="handleQuickAccess"
+        />
       </section>
       
       <div class="bottom-spacer"></div>
@@ -186,13 +142,14 @@ import {
 } from 'ionicons/icons';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-//import { useAuthStore } from '../../stores/auth.store';
+import { useAuthStore } from '../../stores/auth.store';
 //import type { User } from '../stores/auth.store'; // Importación separada para tipos
 import logoImage from '../../assets/images/logo-tese.jpg';
 import { loginWithGoogle } from '../../services/auth/auth.service';
+import SocialLoginButtons from '../../components/auth/SocialLoginButtons.vue';
 
 const router = useRouter();
-//const authStore = useAuthStore();
+const authStore = useAuthStore();
 const email = ref('');
 const password = ref('');
 const isLoading = ref(false);
@@ -273,18 +230,21 @@ const handleProspectiveStudent = async () => {
   }
 };*/
 
-/*const handleQuickAccess = async (provider: 'google' | 'facebook' | 'outlook') => {
+const handleQuickAccess = async (provider: 'google' | 'facebook' | 'outlook') => {
   try {
     isLoading.value = true;
     errorMessage.value = '';
-    await authStore.firebaseLogin(provider); // Usa el método del store
+    
+    await authStore.firebaseLogin(provider);
     router.push('/home');
+    
   } catch (error: any) {
-    errorMessage.value = error.message;
+    errorMessage.value = error.message || 'Error en autenticación';
+    console.error('Error en login:', error);
   } finally {
     isLoading.value = false;
   }
-};*/
+};
 
 
 /*const handleRealOutlook = async () => {
@@ -295,19 +255,6 @@ const handleProspectiveStudent = async () => {
     console.error("Error real:", error);
   }
 };*/
-
-const handleMockOutlook = async () => {
-  isLoading.value = true; // Activa el loading
-  try {
-    await authStore.mockOutlookLogin(); // Llama al método mock del store
-    router.push('/home'); // Redirige al home tras éxito
-  } catch (error) {
-    console.error("Error en simulación:", error);
-    // Opcional: Muestra un toast/alert con el error
-  } finally {
-    isLoading.value = false; // Desactiva el loading
-  }
-};
 </script>
 
 <style scoped>
@@ -315,6 +262,16 @@ const handleMockOutlook = async () => {
   --background: #ebedef;
   padding-top: 20px;
   padding-bottom: 120px;
+}
+
+/* Agregar al FINAL del estilo de LoginPage.vue */
+.social-section .social-login-container {
+  margin-top: 1rem;
+}
+
+.social-section .social-buttons-grid {
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .bottom-spacer {

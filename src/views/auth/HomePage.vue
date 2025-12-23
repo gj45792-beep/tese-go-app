@@ -1,43 +1,16 @@
 <template>
   <ion-page>
     <!-- Header mejorado con geolocalización -->
-    <ion-header>
-      <ion-toolbar class="tese-green-bg">
-        <ion-buttons slot="start">
-          <ion-button @click="openQuickNav" aria-label="Navegación rápida">
-            <ion-icon :icon="compass" color="light" />
-          </ion-button>
-        </ion-buttons>
-        
-        <div class="header-content">
-          <ion-title class="app-title">
-            <span class="gold-text">TESE</span> GO
-            <ion-badge color="light" v-if="currentBuilding">
-              {{ currentBuilding }}
-            </ion-badge>
-          </ion-title>
-          <div class="current-location">
-            <ion-icon :icon="location" color="light" />
-            <span>{{ nearestLandmark || 'TESE Ecatepec' }}</span>
-          </div>
-        </div>
-        
-        <ion-buttons slot="end">
-          <ion-button @click="openNotifications" aria-label="Notificaciones">
-            <ion-icon :icon="notifications" color="light" />
-            <ion-badge color="danger" v-if="notificationCount > 0">
-              {{ notificationCount }}
-            </ion-badge>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+        <!-- Header mejorado con geolocalización -->
+        <!-- Header mejorado con geolocalización -->
+        <!-- Header reutilizable -->
+    <AppHeader :show-logo="true" />
 
     <!-- Contenido principal -->
     <ion-content class="ion-padding app-content">
       <!-- Sección Hero con accesos directos -->
       <div class="hero-section">
-        <h1 class="hero-title">¡Bienvenido{{ user.name ? ', ' + user.name : '' }}!</h1>
+        <h1 class="hero-title">¡Bienvenido ALBERTO{{ user.name ? ', ' + user.name : '' }}!</h1>
         <p class="hero-subtitle">¿A dónde deseas ir hoy?</p>
         
         <div class="quick-access-grid">
@@ -126,6 +99,8 @@
         </ion-fab-list>
       </ion-fab>
     </ion-content>
+    <!-- Footer reutilizable -->
+    <AppFooter />
   </ion-page>
 </template>
 
@@ -143,6 +118,9 @@ import {
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth.store';
 import { ref, computed, onMounted } from 'vue';
+
+import AppHeader from '../../components/common/Header.vue';
+import AppFooter from '../../components/common/Footer.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();

@@ -50,6 +50,7 @@
         <div class="buttons-container">
           <ion-button 
             expand="block" 
+            fill="outline"
             class="enter-button"
             @click="navigateToLogin"
           >
@@ -210,7 +211,7 @@ onMounted(() => {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   max-height: 40vh;
   object-fit: contain;
-  border: 3px solid var(--ion-color-tese-gold);
+  border: 1px solid rgba(255, 215, 0, 0.3); 
   display: block;
 }
 
@@ -235,12 +236,16 @@ onMounted(() => {
   margin-left: auto;
   margin-right: auto;
   will-change: transform, filter;
+   --border-color: var(--ion-color-tese-gold); /* ← AGREGA ESTA LÍNEA */
+  --border-width: 2px; /* ← Y ESTA LÍNEA */
 }
 
 .login-button {
-  --color: var(--ion-color-tese-gold);
+  --color:white;
   --border-color: var(--ion-color-tese-gold);
+  --background: var(--ion-color-tese-green);
   --background-hover: rgba(255, 214, 0, 0.1);
+   --background-activated: var(--ion-color-primary-shade);
   --border-radius: 50px;
   height: 50px;
   font-weight: 500;
