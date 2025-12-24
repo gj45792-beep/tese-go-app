@@ -235,7 +235,7 @@ const handleQuickAccess = async (provider: 'google' | 'facebook' | 'outlook') =>
     isLoading.value = true;
     errorMessage.value = '';
     
-    await authStore.firebaseLogin(provider);
+    //await authStore.firebaseLogin(provider);
     router.push('/home');
     
   } catch (error: any) {

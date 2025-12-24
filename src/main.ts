@@ -1,8 +1,8 @@
-// src/main.ts - AGREGAR Pinia
+// src/main.ts - VERSIÓN MODIFICADA (usa el archivo centralizado)
 import { createApp } from 'vue';
-import { createPinia } from 'pinia'; // <-- Agrega esta línea
 import App from './App.vue';
 import router from './router';
+import pinia from './stores'; // <-- CAMBIA ESTA LÍNEA (importa desde ./stores)
 
 import { IonicVue } from '@ionic/vue';
 
@@ -28,13 +28,10 @@ import '@ionic/vue/css/palettes/dark.system.css';
 import './theme/variables.css';
 import './assets/styles/global.css';
 
-// Crear Pinia
-const pinia = createPinia(); // <-- Agrega esta línea
-
 const app = createApp(App)
   .use(IonicVue)
-  .use(router)
-  .use(pinia); // <-- Agrega esta línea
+  .use(pinia) // <-- AQUÍ SE USA LA INSTANCIA IMPORTADA
+  .use(router);
 
 router.isReady().then(() => {
   app.mount('#app');

@@ -1,37 +1,41 @@
 <template>
-  <ion-header :translucent="true">
-    <ion-toolbar class="tese-toolbar">
-      <!-- Botón menú (izquierda) -->
-      <ion-buttons slot="start">
-        <ion-button @click="toggleMenu" aria-label="Menú principal">
-          <ion-icon :icon="menu" slot="icon-only" />
-        </ion-button>
-      </ion-buttons>
-
-      <!-- Logo y título (centro) -->
-      <div class="header-center">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <div v-if="showLogo" slot="start" class="logo-container">
         <img 
-          v-if="showLogo"
-          :src="logoImage" 
-          alt="TESE" 
-          class="header-logo"
+          src="@/assets/images/logo-tese.jpg" 
+          alt="Logo TESE" 
+          class="logo"
         />
-        <ion-title class="header-title">
-          <span class="gold-text">TESE</span> GO
-        </ion-title>
       </div>
 
-      <!-- Acciones (derecha) -->
+      <ion-title class="ion-text-center">{{ title }}</ion-title>
+      
       <ion-buttons slot="end">
-        <ion-button @click="goToNotifications" aria-label="Notificaciones">
-          <ion-icon :icon="notifications" slot="icon-only" />
-          <ion-badge color="danger" v-if="notificationCount > 0">
-            {{ notificationCount }}
-          </ion-badge>
-        </ion-button>
-        <ion-button @click="goToProfile" aria-label="Perfil">
-          <ion-icon :icon="personCircle" slot="icon-only" />
-        </ion-button>
+        <!-- USUARIO AUTENTICADO: accede DIRECTAMENTE a los getters del store -->
+        <div v-if="!isLoading && isAuth" class="user-info">
+          <ion-chip color="success">
+            <ion-avatar>
+              <img 
+                v-if="authStore.user?.photoURL" 
+                :src="authStore.user.photoURL" 
+                alt="Foto"
+              />
+              <ion-icon v-else :icon="personCircle" />
+            </ion-avatar>
+            <!-- Usa displayName() que es un getter computado -->
+            <ion-label>Hola, {{ userDisplayName }}</ion-label>
+          </ion-chip>
+          <ion-button @click="authStore.logout()" fill="clear" color="light">
+            <ion-icon slot="icon-only" :icon="logOutOutline" />
+          </ion-button>
+        </div>
+
+        <!-- CARGANDO -->
+        <div v-else-if="authStore.loading" class="loading-state">
+          <ion-spinner name="crescent" />
+        </div>
+        <!-- NO autenticado: no muestra nada extra -->
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -45,107 +49,90 @@ import {
   IonButtons, 
   IonButton, 
   IonIcon, 
-  IonBadge 
+  IonChip,
+  IonAvatar,
+  IonLabel,
+  IonSpinner
 } from '@ionic/vue';
-import { 
-  menu, 
-  notifications, 
-  personCircle,
-  compass,
-  location 
-} from 'ionicons/icons';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { logOutOutline, personCircle } from 'ionicons/icons';
+import { useAuthSimpleStore } from '@/stores/auth-simple.store';
+import { ref, watch } from 'vue'; // <-- Añade watch
 
-// Props del componente
+// --- PROPS ---
 const props = defineProps<{
+  title?: string;
   showLogo?: boolean;
-  showBackButton?: boolean;
 }>();
 
-const emit = defineEmits<{
-  'menu-toggle': [];
-  'back-click': [];
-}>();
+// --- CONEXIÓN AL STORE CON WATCH ---
+const authStore = useAuthSimpleStore();
 
-const router = useRouter();
-const notificationCount = ref(0);
+// Crea variables locales REACTIVAS
+const userDisplayName = ref('');
+const isLoading = ref(true);
+const isAuth = ref(false);
 
-// Importar imagen (ajusta la ruta según tu estructura)
-const logoImage = new URL('../../../assets/images/logo-tese.jpg', import.meta.url).href;
+watch(
+  () => authStore.user,
+  (newUser) => {
+    console.log('🔍 WATCH activado. Nuevo usuario:', newUser);
+    console.log('   - Email:', newUser?.email);
+    console.log('   - DisplayName:', newUser?.displayName);
+    userDisplayName.value = newUser?.displayName || 'Usuario';
+    isAuth.value = !!newUser;
+  },
+  { immediate: true }
+);
 
-const toggleMenu = () => {
-  emit('menu-toggle');
-  console.log('Menú toggled');
-};
+watch(
+  () => authStore.loading, // Observa el estado de carga
+  (newLoading) => {
+    isLoading.value = newLoading;
+  },
+  { immediate: true }
+);
 
-const goToNotifications = () => {
-  router.push('/notifications');
-};
-
-const goToProfile = () => {
-  router.push('/profile');
-};
-
-const goBack = () => {
-  emit('back-click');
-  router.back();
+// Función de logout
+const logout = () => {
+  authStore.logout();
 };
 </script>
-
 <style scoped>
-.tese-toolbar {
-  --background: var(--ion-color-tese-green);
-  --color: white;
-  --border-color: var(--ion-color-tese-gold);
-  --border-width: 0 0 2px 0;
-}
-
-.header-center {
+.user-info {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex: 1;
+  gap: 8px;
 }
 
-.header-logo {
+.loading-state {
+  padding: 0 8px;
+}
+
+ion-avatar {
+  width: 24px;
+  height: 24px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+}
+
+.logo {
   height: 32px;
   width: auto;
-  border-radius: 50%;
-  border: 2px solid var(--ion-color-tese-gold);
+  border-radius: 4px;
+}
+/* Cambia el color del texto del chip (Hola, Nombre) */
+.user-info ion-label {
+  color: #FFED4E !important; /* Dorado TESE - ajusta si quieres otro */
+  font-weight: 600;
 }
 
-.header-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 1px;
+/* Ajusta el espacio entre la foto y el texto "Hola, Nombre" */
+.user-info ion-avatar {
+  margin-right: 20px; /* Aumenta este valor si quieres más separación */
 }
 
-.gold-text {
-  color: var(--ion-color-tese-gold);
-}
-
-ion-badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 0.7rem;
-  min-width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Efectos hover */
-ion-button {
-  --color: white;
-  --background-hover: rgba(255, 255, 255, 0.1);
-  transition: opacity 0.3s ease;
-}
-
-ion-button:hover {
-  opacity: 0.9;
-}
 </style>

@@ -29,43 +29,35 @@
 import { ref } from 'vue';
 import { IonButton, IonIcon, toastController } from '@ionic/vue';
 import { logoGoogle, mailOutline } from 'ionicons/icons';
-import { auth } from '@/services/auth/firebase.config'; // Importa la autenticación REAL
-import { 
-  GoogleAuthProvider, 
-  signInWithPopup,
-  signOut 
-} from 'firebase/auth';
+import { useAuthSimpleStore } from '@/stores/auth-simple.store';
+import { useRouter } from 'vue-router'; // ⬅️ NUEVA IMPORTACIÓN
 
 const loading = ref(false);
+const authStore = useAuthSimpleStore();
+const router = useRouter(); // ⬅️ NUEVO: Instancia del router
 
-// 🔥 FUNCIÓN REAL PARA GOOGLE
+// 🔥 FUNCIÓN PARA GOOGLE (usando el nuevo store + redirección)
 const signInWithGoogle = async () => {
   loading.value = true;
   try {
-    const provider = new GoogleAuthProvider();
-    // Esto abrirá una ventana emergente de Google para autenticar
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+    const result = await authStore.loginWithGoogle();
     
-    console.log('✅ Usuario autenticado con Google:', user.displayName);
-    
-    // Muestra un mensaje de éxito
-    const toast = await toastController.create({
-      message: `¡Bienvenido, ${user.displayName}!`,
-      duration: 3000,
-      color: 'success'
-    });
-    await toast.present();
-
-    // Futuro: Aquí redirigirás al HomePage o guardarás el estado en auth.store
-    // Por ahora, solo recarga la página para ver el cambio
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
-
+    if (result.success) {
+      const toast = await toastController.create({
+        message: `¡Bienvenido, ${result.user?.displayName}!`,
+        duration: 3000,
+        color: 'success'
+      });
+      await toast.present();
+      
+      // ⭐⭐ NUEVO: Redirige a la página de inicio (Home)
+      router.push('/home');
+      
+    } else {
+      throw result.error;
+    }
   } catch (error: any) {
     console.error('❌ Error en autenticación Google:', error);
-    
     const toast = await toastController.create({
       message: `Error: ${error.message}`,
       duration: 4000,
@@ -77,11 +69,10 @@ const signInWithGoogle = async () => {
   }
 };
 
-// 📧 FUNCIÓN MOCK PARA OUTLOOK (por ahora)
+// 📧 FUNCIÓN MOCK PARA OUTLOOK (por ahora) - SE MANTIENE IGUAL
 const signInWithOutlook = async () => {
   loading.value = true;
   try {
-    // Simula un retardo de red
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     const toast = await toastController.create({

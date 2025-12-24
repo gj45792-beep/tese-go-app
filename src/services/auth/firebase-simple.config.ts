@@ -1,6 +1,6 @@
-// src/services/auth/firebase.config.ts
+// src/services/auth/firebase-simple.config.ts
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth'; // Solo getAuth
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA3MzQsY95bSMYblKBbFQQ9XBOgBJnubW4",
@@ -12,6 +12,9 @@ const firebaseConfig = {
   measurementId: "G-WHC3NBFQGC"
 };
 
+// Inicialización SIMPLE
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+const auth = getAuth(app);
+
+export { auth };
 export default app;

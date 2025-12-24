@@ -1,89 +1,55 @@
-// src/stores/auth.store.ts - VERSIÓN CORREGIDA
+// src/stores/auth.store.ts
 import { defineStore } from 'pinia';
-import { loginWithProvider, mockLoginWithOutlook } from '../services/auth/auth.service';
+import { ref, computed } from 'vue';
+import { 
+  onAuthStateChanged, 
+  type User 
+} from 'firebase/auth';
+import { auth } from '@/services/auth/firebase.config';
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: null as any,
-    token: null as string | null,
-    isGuest: false,
-    isAuthenticated: false
-  }),
+export const useAuthStore = defineStore('auth', () => {
+  // Estado reactivo: el usuario de Firebase o `null` si no hay sesión
+  const currentUser = ref<User | null>(null);
+  const isLoading = ref(true); // Para saber cuando Firebase termina de verificar
 
-  actions: {
-    async firebaseLogin(provider: 'google' | 'facebook' | 'outlook') {
-      try {
-        console.log(`Iniciando firebaseLogin con ${provider}...`);
-        
-        // Si es outlook, usa el mock por ahora
-        if (provider === 'outlook') {
-          return await this.mockOutlookLogin();
-        }
-        
-        // Para google/facebook, usa Firebase real
-        const userData = await loginWithProvider(provider);
-        
-        // Guardar datos en el store
-        this.user = {
-          id: userData.uid,
-          email: userData.email,
-          name: userData.displayName,
-          role: 'user',
-          provider: provider
-        };
-        this.token = 'firebase-token-' + provider;
-        this.isAuthenticated = true;
-        
-        // Guardar en localStorage
-        localStorage.setItem('auth_data', JSON.stringify({
-          user: this.user,
-          token: this.token,
-          timestamp: new Date().getTime()
-        }));
-        
-        console.log('Login exitoso:', this.user.email);
-        
-      } catch (error: any) {
-        console.error('Error en firebaseLogin:', error);
-        throw error;
-      }
-    },
+  // Getters (propiedades computadas)
+  const isAuthenticated = computed(() => !!currentUser.value);
+  const userDisplayName = computed(() => currentUser.value?.displayName || '');
 
-    async mockOutlookLogin() {
-      try {
-        console.log('Usando mockOutlookLogin...');
-        const userData = await mockLoginWithOutlook();
-        
-        this.user = {
-          id: userData.uid,
-          email: userData.email,
-          name: userData.displayName,
-          role: 'user',
-          provider: 'outlook'
-        };
-        this.token = 'mock-outlook-token';
-        this.isAuthenticated = true;
-        
-        localStorage.setItem('auth_data', JSON.stringify({
-          user: this.user,
-          token: this.token,
-          timestamp: new Date().getTime()
-        }));
-        
-        console.log('Mock login exitoso:', this.user.email);
-        
-      } catch (error: any) {
-        console.error('Error en mockOutlookLogin:', error);
-        throw error;
-      }
-    },
+  // Acción: Configurar el observador de Firebase
+  const initAuthListener = () => {
+    // Esta función "escucha" cambios en el estado de autenticación
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      currentUser.value = user; // Se actualiza automáticamente al loguearse/desloguearse
+      isLoading.value = false;
+      console.log('🔄 Store de autenticación actualizado:', user ? user.email : 'No user');
+    });
 
-    logout() {
-      this.user = null;
-      this.token = null;
-      this.isGuest = false;
-      this.isAuthenticated = false;
-      localStorage.removeItem('auth_data');
+    // Devuelve la función para cancelar la suscripción si es necesario
+    return unsubscribe;
+  };
+   initAuthListener();
+  // Acción: Cerrar sesión
+  const logout = async () => {
+    try {
+      await auth.signOut();
+      // Nota: El observador `onAuthStateChanged` se encargará de poner currentUser.value = null
+      console.log('👋 Store: Solicitud de cierre de sesión enviada');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      throw error;
     }
-  }
+  };
+
+  return {
+    // Estado y getters
+    currentUser,
+    isLoading,
+    isAuthenticated,
+    userDisplayName,
+    
+    // Acciones
+    initAuthListener,
+    logout,
+  };
 });

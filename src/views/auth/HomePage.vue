@@ -4,7 +4,7 @@
         <!-- Header mejorado con geolocalización -->
         <!-- Header mejorado con geolocalización -->
         <!-- Header reutilizable -->
-    <AppHeader :show-logo="true" />
+    <Header :show-logo="true" />
 
     <!-- Contenido principal -->
     <ion-content class="ion-padding app-content">
@@ -100,7 +100,7 @@
       </ion-fab>
     </ion-content>
     <!-- Footer reutilizable -->
-    <AppFooter />
+    <Footer />
   </ion-page>
 </template>
 
@@ -119,14 +119,17 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth.store';
 import { ref, computed, onMounted } from 'vue';
 
-import AppHeader from '../../components/common/Header.vue';
-import AppFooter from '../../components/common/Footer.vue';
+import Header from '@/components/common/Header.vue';
+import Footer from '@/components/common/Footer.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
 
 // Datos del usuario
-const user = computed(() => authStore.user || { name: '', role: 'guest' });
+const user = computed(() => ({
+  name: authStore.userDisplayName || '',
+  role: 'guest'
+}));
 
 // Configuración de UI
 const eventViewMode = ref('timeline');
