@@ -1,10 +1,6 @@
 <template>
   <ion-page>
-    <!-- Header mejorado con geolocalización -->
-        <!-- Header mejorado con geolocalización -->
-        <!-- Header mejorado con geolocalización -->
-        <!-- Header reutilizable -->
-    <Header :show-logo="true" />
+    
 
     <!-- Contenido principal -->
     <ion-content class="ion-padding app-content">
@@ -100,7 +96,7 @@
       </ion-fab>
     </ion-content>
     <!-- Footer reutilizable -->
-    <Footer />
+    
   </ion-page>
 </template>
 
