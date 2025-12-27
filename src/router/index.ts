@@ -34,13 +34,31 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Home',
         component: () => import('@/views/auth/HomePage.vue'),
       },
-      // Aquí después agregarás MapPage, EventsPage, etc.
+      {
+        path: 'events',
+        name: 'Events',
+        component: () => import('@/views/events/EventsListPage.vue'),
+      },
+      {
+        path: 'map',
+        name: 'Map',
+        component: () => import('@/views/navigation/MapPage.vue'),
+      },
+      // Aquí después agregarás más páginas
     ],
   },
-  // Redirección para compatibilidad
+  // Redirecciones para compatibilidad
   {
     path: '/home',
     redirect: '/app/home',
+  },
+  {
+    path: '/events',
+    redirect: '/app/events',
+  },
+  {
+    path: '/map',
+    redirect: '/app/map',
   },
 ];
 

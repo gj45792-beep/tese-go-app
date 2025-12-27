@@ -1,12 +1,13 @@
 <template>
   <ion-page>
-    
+    <!-- Header reutilizable -->
+    <Header title="Inicio" :show-logo="true" />
 
     <!-- Contenido principal -->
     <ion-content class="ion-padding app-content">
       <!-- Sección Hero con accesos directos -->
       <div class="hero-section">
-        <h1 class="hero-title">¡Bienvenido ALBERTO{{ user.name ? ', ' + user.name : '' }}!</h1>
+        <h1 class="hero-title">¡Bienvenido{{ user.name ? ', ' + user.name : '' }}!</h1>
         <p class="hero-subtitle">¿A dónde deseas ir hoy?</p>
         
         <div class="quick-access-grid">
@@ -34,29 +35,21 @@
           </ion-segment-button>
         </ion-segment>
 
-        <!-- Vista de timeline -->
+        <!-- Vista de timeline CON EVENTCARD REUTILIZABLE -->
         <div v-if="eventViewMode === 'timeline'" class="timeline-view">
-          <div 
-            v-for="event in filteredFeaturedEvents" 
-            :key="event.id" 
-            class="event-card"
-            @click="goToEventDetail(event.id)"
-          >
-            <div class="event-time">
-              {{ event.time }}
-            </div>
-            <div class="event-details">
-              <h3>{{ event.title }}</h3>
-              <p class="event-location">
-                <ion-icon :icon="location" /> {{ event.location }}
-              </p>
-              <div class="event-tags">
-                <ion-chip :color="getCategoryColor(event.categoryId)" outline>
-                  {{ getCategoryName(event.categoryId) }}
-                </ion-chip>
-              </div>
-            </div>
-          </div>
+          <EventCard 
+            v-for="event in filteredFeaturedEvents"
+            :key="event.id"
+            :event="{
+              id: event.id,
+              title: event.title,
+              time: event.time,
+              location: event.location,
+              category: event.categoryId,
+              tags: [getCategoryName(event.categoryId)]
+            }"
+            @click="goToEventDetail"
+          />
         </div>
 
         <!-- Vista de mapa (placeholder) -->
@@ -95,28 +88,41 @@
         </ion-fab-list>
       </ion-fab>
     </ion-content>
-    <!-- Footer reutilizable -->
     
+    <!-- Footer reutilizable -->
+    <Footer />
   </ion-page>
 </template>
 
 <script setup lang="ts">
 import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, 
-  IonButton, IonIcon, IonBadge, IonButtons, IonChip,
-  IonLabel, IonSegment, IonSegmentButton, IonFab, IonFabButton, IonFabList
+  IonPage, 
+  IonContent, 
+  IonButton, 
+  IonIcon, 
+  IonChip,
+  IonLabel, 
+  IonSegment, 
+  IonSegmentButton, 
+  IonFab, 
+  IonFabButton, 
+  IonFabList 
 } from '@ionic/vue';
 import { 
-  notifications, compass, location, sparkles,
-  school, trophy, people, accessibility, carSport,
-  map as mapIcon, calendar, time, walk
+  location, 
+  sparkles,
+  school, 
+  accessibility, 
+  carSport,
+  map as mapIcon, 
+  walk 
 } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../../stores/auth.store';
-import { ref, computed, onMounted } from 'vue';
-
+import { useAuthStore } from '@/stores/auth.store';
+import { ref, computed } from 'vue';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
+import EventCard from '@/components/events/EventCard.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -129,9 +135,6 @@ const user = computed(() => ({
 
 // Configuración de UI
 const eventViewMode = ref('timeline');
-const notificationCount = ref(2);
-const currentBuilding = ref('Edificio A');
-const nearestLandmark = ref('Biblioteca Central');
 
 // Accesos rápidos
 const quickAccess = ref([
@@ -230,17 +233,8 @@ const openSmartAssistant = () => {
 
 const goToMap = () => router.push('/map');
 const goToEventDetail = (id: number) => router.push(`/event-detail/${id}`);
-const openNotifications = () => router.push('/notifications');
-const openQuickNav = () => router.push('/quick-nav');
 const handleShortcut = (action: Function) => action();
 const changeEventView = () => console.log('Cambiando vista:', eventViewMode.value);
-
-// Simular carga de datos
-onMounted(() => {
-  setTimeout(() => {
-    notificationCount.value = 0;
-  }, 3000);
-});
 </script>
 
 <style scoped>
@@ -251,36 +245,6 @@ onMounted(() => {
   --tese-corner-radius: 16px;
   --ion-color-tese-sky: #68c5ff;
   --ion-color-tese-mint: #5de2a3;
-}
-
-/* Header mejorado */
-.tese-green-bg {
-  --background: var(--ion-color-tese-green);
-  --color: white;
-  padding-top: env(safe-area-inset-top);
-}
-
-.header-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 20px;
-}
-
-.app-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.current-location {
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  opacity: 0.9;
 }
 
 /* Sección Hero */
@@ -349,45 +313,6 @@ onMounted(() => {
 /* Timeline de eventos */
 .timeline-view {
   margin-top: 1rem;
-}
-
-.event-card {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-
-.event-card:last-child {
-  border-bottom: none;
-}
-
-.event-time {
-  font-weight: 600;
-  color: var(--ion-color-primary);
-  min-width: 70px;
-}
-
-.event-details {
-  flex: 1;
-}
-
-.event-details h3 {
-  margin: 0 0 0.3rem;
-  font-size: 1rem;
-}
-
-.event-location {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--ion-color-medium);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.event-tags {
-  margin-top: 0.5rem;
 }
 
 /* Vista de mapa */
