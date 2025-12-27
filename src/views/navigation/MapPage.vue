@@ -31,6 +31,22 @@
             <h3>Mapa Interactivo TESE</h3>
             <p>📍 Ubicación actual: {{ currentLocation }}</p>
             <p>🏛️ Edificio más cercano: {{ nearestBuilding }}</p>
+            
+            <!-- Puntos de interés simulados -->
+            <div class="points-of-interest">
+              <div 
+                v-for="poi in pointsOfInterest" 
+                :key="poi.id"
+                class="poi-item"
+                :style="{ top: poi.top + '%', left: poi.left + '%' }"
+                @click="selectPOI(poi)"
+              >
+                <div class="poi-marker" :class="poi.type">
+                  <ion-icon :icon="getPoiIcon(poi.type)" />
+                </div>
+                <div class="poi-label">{{ poi.name }}</div>
+              </div>
+            </div>
           </div>
           
           <img 
@@ -40,21 +56,24 @@
           />
         </div>
 
-        <!-- Información del edificio seleccionado -->
+        <!-- Información del edificio seleccionado CON BUILDINGCARD REUTILIZABLE -->
         <div v-if="selectedPOI" class="building-info">
-          <h3>{{ selectedPOI.name }}</h3>
-          <p>{{ selectedPOI.description }}</p>
-          
-          <div class="building-services">
-            <ion-chip v-for="service in selectedPOI.services" :key="service">
-              {{ service }}
-            </ion-chip>
-          </div>
-
-          <ion-button expand="block" @click="navigateTo(selectedPOI)">
-            <ion-icon :icon="navigateOutline" slot="start" />
-            Navegar hasta aquí
-          </ion-button>
+          <BuildingCard 
+            :building="{
+              id: selectedPOI.id,
+              name: selectedPOI.name,
+              description: selectedPOI.description,
+              category: selectedPOI.type,
+              services: selectedPOI.services,
+              distance: 150, // Ejemplo: 150 metros
+              status: 'open',
+              schedule: '7:00 AM - 10:00 PM'
+            }"
+            :show-details-button="true"
+            @click="selectPOI(selectedPOI)"
+            @navigate="navigateTo(selectedPOI)"
+            @details="goToBuildingDetail(selectedPOI.id)"
+          />
         </div>
       </div>
 
@@ -127,6 +146,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
+import BuildingCard from '@/components/campus/BuildingCard.vue';
 
 const router = useRouter();
 
@@ -136,13 +156,91 @@ const currentLocation = ref('Edificio A - Sala de Computo');
 const nearestBuilding = ref('Biblioteca Central');
 const selectedPOI = ref<any>(null);
 
+// Puntos de interés del campus
+const pointsOfInterest = ref([
+  {
+    id: 1,
+    name: 'Edificio A',
+    type: 'academic',
+    top: 30,
+    left: 40,
+    description: 'Edificio de aulas principales y salas de cómputo',
+    services: ['Aulas', 'Computo', 'Cafetería']
+  },
+  {
+    id: 2,
+    name: 'Biblioteca',
+    type: 'library',
+    top: 50,
+    left: 60,
+    description: 'Biblioteca central con sala de estudio y recursos digitales',
+    services: ['Libros', 'Estudio', 'Computadoras']
+  },
+  {
+    id: 3,
+    name: 'Canchas Deportivas',
+    type: 'sports',
+    top: 70,
+    left: 30,
+    description: 'Área deportiva con canchas de fútbol, básquetbol y voleibol',
+    services: ['Fútbol', 'Básquetbol', 'Voleibol']
+  },
+  {
+    id: 4,
+    name: 'Cafetería',
+    type: 'food',
+    top: 40,
+    left: 20,
+    description: 'Cafetería principal con variedad de alimentos',
+    services: ['Comida', 'Bebidas', 'Snacks']
+  },
+  {
+    id: 5,
+    name: 'Enfermería',
+    type: 'medical',
+    top: 60,
+    left: 80,
+    description: 'Servicio médico y primeros auxilios',
+    services: ['Médico', 'Medicamentos', 'Emergencias']
+  },
+  {
+    id: 6,
+    name: 'Auditorio',
+    type: 'event',
+    top: 20,
+    left: 70,
+    description: 'Auditorio principal para eventos y conferencias',
+    services: ['Eventos', 'Conferencias', 'Presentaciones']
+  }
+]);
+
 // Métodos
 const changeMobilityType = () => {
   console.log('Tipo de movilidad:', mobilityType.value);
 };
 
+const getPoiIcon = (type: string) => {
+  const icons: Record<string, any> = {
+    academic: schoolOutline,
+    library: libraryOutline,
+    sports: carOutline,
+    food: restaurantOutline,
+    medical: medkitOutline,
+    event: businessOutline
+  };
+  return icons[type] || schoolOutline;
+};
+
+const selectPOI = (poi: any) => {
+  selectedPOI.value = poi;
+};
+
 const navigateTo = (poi: any) => {
   router.push(`/navigation?to=${poi.id}&type=${mobilityType.value}`);
+};
+
+const goToBuildingDetail = (id: number) => {
+  router.push(`/building-detail/${id}`);
 };
 
 const findNearestRestroom = () => {
@@ -217,28 +315,54 @@ const toggleSatellite = () => {
   color: var(--ion-color-medium);
 }
 
+.points-of-interest {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.poi-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  text-align: center;
+}
+
+.poi-marker {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 4px;
+  color: white;
+  font-size: 16px;
+}
+
+.poi-marker.academic { background: var(--ion-color-primary); }
+.poi-marker.library { background: var(--ion-color-secondary); }
+.poi-marker.sports { background: var(--ion-color-success); }
+.poi-marker.food { background: var(--ion-color-warning); }
+.poi-marker.medical { background: var(--ion-color-danger); }
+.poi-marker.event { background: var(--ion-color-tese-gold); }
+
+.poi-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 .building-info {
   padding: 16px;
   background: var(--ion-color-light);
   border-top: 1px solid var(--ion-color-medium-shade);
-}
-
-.building-info h3 {
-  margin: 0 0 8px 0;
-  color: var(--ion-color-dark);
-}
-
-.building-info p {
-  margin: 0 0 12px 0;
-  color: var(--ion-color-medium);
-  font-size: 0.9rem;
-}
-
-.building-services {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
 }
 
 .quick-actions {
