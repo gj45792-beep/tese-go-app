@@ -108,8 +108,7 @@
       </ion-fab>
     </ion-content>
 
-    <!-- Footer reutilizable -->
-    <Footer />
+    <Footer variant="nav" activeTab="map" />
   </ion-page>
 </template>
 

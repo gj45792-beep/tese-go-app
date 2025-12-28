@@ -67,6 +67,7 @@
         </div>
       </transition>
     </ion-content>
+    <Footer variant="info" />
   </ion-page>
 </template>
 
@@ -74,6 +75,7 @@
 import { IonPage, IonContent, IonButton } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 import { onMounted } from 'vue';
+import Footer from '@/components/common/Footer.vue';
 
 // ✅ RUTAS CORREGIDAS (desde views/public/)
 import logoImage from '../../assets/images/logo-tese.jpg';

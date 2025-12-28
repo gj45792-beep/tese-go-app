@@ -1,8 +1,7 @@
-// src/main.ts - VERSIÓN MODIFICADA (usa el archivo centralizado)
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import pinia from './stores'; // <-- CAMBIA ESTA LÍNEA (importa desde ./stores)
+import pinia from './stores'; // Importa desde ./stores
 
 import { IonicVue } from '@ionic/vue';
 
@@ -22,17 +21,33 @@ import '@ionic/vue/css/text-transformation.css';
 import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
 
-import '@ionic/vue/css/palettes/dark.system.css';
-
 /* Theme variables */
 import './theme/variables.css';
-import './assets/styles/global.css';
 
-const app = createApp(App)
-  .use(IonicVue)
-  .use(pinia) // <-- AQUÍ SE USA LA INSTANCIA IMPORTADA
-  .use(router);
+// Importar defineCustomElements para evitar error de classList
+import { defineCustomElements } from '@ionic/core/loader';
 
-router.isReady().then(() => {
-  app.mount('#app');
+// Crear la app de Vue
+const app = createApp(App);
+
+// Usar IonicVue con configuración
+app.use(IonicVue, {
+  mode: 'ios', // o 'md' para Material Design
+  swipeBackEnabled: true,
 });
+
+// Usar router y store
+app.use(router);
+app.use(pinia);
+
+// Esto arregla el error "Cannot read properties of undefined (reading 'classList')"
+defineCustomElements(window);
+
+// Montar la app
+app.mount('#app');
+
+// Opcional: Configurar modo oscuro
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+if (prefersDark.matches) {
+  document.body.classList.toggle('dark', true);
+}

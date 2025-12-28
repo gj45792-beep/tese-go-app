@@ -44,6 +44,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Map',
         component: () => import('@/views/navigation/MapPage.vue'),
       },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/profile/ProfilePage.vue'),
+      },
       // Aquí después agregarás más páginas
     ],
   },
@@ -59,6 +64,15 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/map',
     redirect: '/app/map',
+  },
+  {
+    path: '/profile',
+    redirect: '/app/profile',
+  },
+  // Catch-all 404
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/',
   },
 ];
 

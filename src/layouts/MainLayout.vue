@@ -8,14 +8,7 @@
       <ion-router-outlet />
     </ion-content>
     
-    <!-- Footer TEMPORAL minimalista -->
-    <ion-footer>
-      <ion-toolbar>
-        <div class="simple-footer">
-          <ion-title size="small">TESE GO - Navegación Inteligente</ion-title>
-        </div>
-      </ion-toolbar>
-    </ion-footer>
+   
   </ion-app>
 </template>
 

@@ -1,145 +1,181 @@
 <template>
-  <ion-footer class="tese-footer" :translucent="true">
-    <ion-toolbar>
-      <div class="footer-content">
-        <!-- Información de contacto -->
-        <div class="footer-section">
-          <h4>Tecnológico de Estudios Superiores de Ecatepec</h4>
-          <p class="footer-text">
-            Av. Tecnológico s/n, Col. Valle de Anáhuac, Ecatepec de Morelos, Estado de México
-          </p>
-          <p class="footer-text">
-            📞 (55) 5000 0000 | ✉️ contacto@tese.edu.mx
-          </p>
-        </div>
+  <!-- MODO INFORMATIVO (Welcome/Login) -->
+  <div v-if="variant === 'info'" class="info-footer">
+    <div class="info-content">
+      <p class="institution-name">Tecnológico de Estudios Superiores de Ecatepec</p>
+      <p class="copyright">© {{ currentYear }} TESE GO</p>
+      <p class="contact-email">jafg@tese.edu.mx</p>
+    </div>
+  </div>
 
-        <!-- Enlaces rápidos -->
-        <div class="footer-links">
-          <a href="#" class="footer-link" @click.prevent="goToAbout">Acerca de</a>
-          <a href="#" class="footer-link" @click.prevent="goToPrivacy">Privacidad</a>
-          <a href="#" class="footer-link" @click.prevent="goToTerms">Términos</a>
-          <a href="#" class="footer-link" @click.prevent="goToHelp">Ayuda</a>
-        </div>
-
-        <!-- Copyright -->
-        <div class="footer-copyright">
-          <p>© {{ currentYear }} TESE GO. Todos los derechos reservados.</p>
-          <p class="footer-version">v1.0.0-alpha</p>
-        </div>
-      </div>
-    </ion-toolbar>
-  </ion-footer>
+  <!-- MODO NAVEGACIÓN (Home/Events/Map/Profile) -->
+  <div v-else class="nav-footer">
+    <!-- Tabs de navegación -->
+    <div class="nav-tabs">
+      <router-link 
+        to="/app/home" 
+        class="nav-tab" 
+        :class="{ 'active': activeTab === 'home' }"
+      >
+        <ion-icon :icon="home" />
+        <span class="tab-label">Inicio</span>
+      </router-link>
+      
+      <router-link 
+        to="/app/events" 
+        class="nav-tab" 
+        :class="{ 'active': activeTab === 'events' }"
+      >
+        <ion-icon :icon="calendar" />
+        <span class="tab-label">Eventos</span>
+      </router-link>
+      
+      <router-link 
+        to="/app/map" 
+        class="nav-tab" 
+        :class="{ 'active': activeTab === 'map' }"
+      >
+        <ion-icon :icon="map" />
+        <span class="tab-label">Mapa</span>
+      </router-link>
+      
+      <router-link 
+        to="/app/profile" 
+        class="nav-tab" 
+        :class="{ 'active': activeTab === 'profile' }"
+      >
+        <ion-icon :icon="person" />
+        <span class="tab-label">Perfil</span>
+      </router-link>
+    </div>
+    
+    <!-- Copyright -->
+    <div class="nav-copyright">
+      <p>© {{ currentYear }} TESE GO jafg</p>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { IonFooter, IonToolbar } from '@ionic/vue';
-import { useRouter } from 'vue-router';
+import { home, calendar, map, person } from 'ionicons/icons';
+import { IonIcon } from '@ionic/vue';
 import { ref } from 'vue';
+import { RouterLink } from 'vue-router';
 
-const router = useRouter();
 const currentYear = ref(new Date().getFullYear());
 
-const goToAbout = () => {
-  router.push('/about');
-  console.log('Navegando a Acerca de');
-};
-
-const goToPrivacy = () => {
-  router.push('/privacy');
-  console.log('Navegando a Privacidad');
-};
-
-const goToTerms = () => {
-  router.push('/terms');
-  console.log('Navegando a Términos');
-};
-
-const goToHelp = () => {
-  router.push('/help');
-  console.log('Navegando a Ayuda');
-};
+// Props
+const props = defineProps({
+  variant: {
+    type: String,
+    default: 'nav',
+    validator: (value: string) => ['nav', 'info'].includes(value)
+  },
+  activeTab: {
+    type: String,
+    default: 'home'
+  }
+});
 </script>
 
 <style scoped>
-.tese-footer {
-  --background: var(--ion-color-tese-green);
-  --color: white;
-  --border-color: var(--ion-color-tese-gold);
-  --border-width: 2px 0 0 0;
-}
-
-.footer-content {
-  padding: 1rem;
+/* ===== MODO INFORMATIVO ===== */
+.info-footer {
+  background: #811D22;
+  color: white;
   text-align: center;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 12px 15px 10px;
 }
 
-.footer-section {
-  margin-bottom: 1rem;
-}
-
-.footer-section h4 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.1rem;
-  color: var(--ion-color-tese-gold);
+.institution-name {
+  font-size: 0.85rem;
+  margin: 0 0 6px 0;
   font-weight: 600;
 }
 
-.footer-text {
-  margin: 0.3rem 0;
-  font-size: 0.85rem;
-  opacity: 0.9;
-  line-height: 1.4;
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin: 1rem 0;
-  padding: 1rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.footer-link {
-  color: white;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: color 0.3s ease;
-}
-
-.footer-link:hover {
-  color: var(--ion-color-tese-gold);
-  text-decoration: underline;
-}
-
-.footer-copyright {
-  margin-top: 1rem;
-  font-size: 0.8rem;
-  opacity: 0.8;
-}
-
-.footer-version {
+.copyright {
   font-size: 0.75rem;
-  font-style: italic;
-  margin-top: 0.3rem;
+  margin: 0 0 4px 0;
+  opacity: 0.95;
+}
+
+.contact-email {
+  font-size: 0.8rem;
+  color: #ffd700;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ===== MODO NAVEGACIÓN ===== */
+.nav-footer {
+  background: #f8f9fa;
+  padding: 10px 0 5px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.nav-tabs {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 5px;
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #6c757d;
+  padding: 8px 5px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  flex: 1;
+  max-width: 80px;
+}
+
+.nav-tab:hover {
+  background-color: #e9ecef;
+}
+
+.nav-tab.active {
+  color: #8b0000;
+  background-color: rgba(139, 0, 0, 0.1);
+}
+
+.nav-tab ion-icon {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.tab-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.nav-copyright {
+  text-align: center;
+  padding: 8px 0 5px;
+  margin-top: 5px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background: #f8f9fa;
+}
+
+.nav-copyright p {
+  font-size: 0.7rem;
+  color: #8b0000;
+  margin: 0;
+  font-weight: 500;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .footer-content {
-    padding: 0.8rem;
+@media (max-width: 350px) {
+  .tab-label {
+    font-size: 0.65rem;
   }
   
-  .footer-links {
-    gap: 1rem;
-  }
-  
-  .footer-text {
-    font-size: 0.8rem;
+  .nav-tab {
+    padding: 6px 3px;
+    max-width: 70px;
   }
 }
 </style>

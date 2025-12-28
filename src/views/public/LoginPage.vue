@@ -126,6 +126,7 @@
       
       <div class="bottom-spacer"></div>
     </ion-content>
+    <Footer variant="info" />
   </ion-page>
 </template>
 
@@ -147,6 +148,7 @@ import { useAuthStore } from '../../stores/auth.store';
 import logoImage from '../../assets/images/logo-tese.jpg';
 import { loginWithGoogle } from '../../services/auth/auth.service';
 import SocialLoginButtons from '../../components/auth/SocialLoginButtons.vue';
+import Footer from '@/components/common/Footer.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();

@@ -64,8 +64,7 @@
       </ion-fab>
     </ion-content>
 
-    <!-- Footer reutilizable -->
-    <Footer />
+    <Footer variant="nav" activeTab="events" />
   </ion-page>
 </template>
 
