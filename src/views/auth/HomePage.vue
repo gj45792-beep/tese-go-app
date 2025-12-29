@@ -48,7 +48,7 @@
               category: event.categoryId,
               tags: [getCategoryName(event.categoryId)]
             }"
-            @click="goToEventDetail"
+
           />
         </div>
 
@@ -116,18 +116,18 @@ import {
   walk 
 } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth.store';
+import { useAuthSimpleStore } from '@/stores/auth-simple.store';
 import { ref, computed } from 'vue';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
 import EventCard from '@/components/events/EventCard.vue';
 
 const router = useRouter();
-const authStore = useAuthStore();
+const authStore = useAuthSimpleStore();
 
 // Datos del usuario
 const user = computed(() => ({
-  name: authStore.userDisplayName || '',
+  name: authStore.displayName() || '',
   role: 'guest'
 }));
 

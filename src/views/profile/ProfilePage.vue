@@ -20,8 +20,8 @@
           
           <!-- Nombre y email -->
           <div class="user-details">
-            <h1 class="user-name">Usuario TESE</h1>
-            <p class="user-email">usuario@tese.edu.mx</p>
+           <h1 class="user-name">{{ authStore.displayName() }}</h1>
+<p class="user-email">{{ authStore.user?.email || 'usuario@tese.edu.mx' }}</p>
             <ion-chip color="primary" outline>
               <ion-icon :icon="school" />
               <ion-label>Estudiante TESE</ion-label>
@@ -83,16 +83,21 @@
 import { IonPage, IonContent, IonList, IonItem, IonLabel, IonIcon, IonToggle, IonChip, IonItemDivider } from '@ionic/vue';
 import { personCircle, school, moon, accessibility, chevronForward, logOut } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
+import { useAuthSimpleStore } from '@/stores/auth-simple.store';
 
 // Importar componentes
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
 
 const router = useRouter();
-
-const logout = () => {
-  console.log('Cerrar sesión');
-  router.push('/');
+const authStore = useAuthSimpleStore();
+const logout = async () => {
+  try {
+    await authStore.logout();
+    router.push('/');
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+  }
 };
 </script>
 
@@ -159,3 +164,7 @@ const logout = () => {
   font-size: 0.8rem;
 }
 </style>
+
+
+
+

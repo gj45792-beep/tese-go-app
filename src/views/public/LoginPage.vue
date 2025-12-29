@@ -143,7 +143,7 @@ import {
 } from 'ionicons/icons';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../../stores/auth.store';
+import { useAuthSimpleStore } from '../../stores/auth-simple.store';
 //import type { User } from '../stores/auth.store'; // Importación separada para tipos
 import logoImage from '../../assets/images/logo-tese.jpg';
 import { loginWithGoogle } from '../../services/auth/auth.service';
@@ -151,7 +151,7 @@ import SocialLoginButtons from '../../components/auth/SocialLoginButtons.vue';
 import Footer from '@/components/common/Footer.vue';
 
 const router = useRouter();
-const authStore = useAuthStore();
+const authStore = useAuthSimpleStore();
 const email = ref('');
 const password = ref('');
 const isLoading = ref(false);
