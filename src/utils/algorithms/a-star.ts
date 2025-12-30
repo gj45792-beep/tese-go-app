@@ -41,24 +41,24 @@ export interface PathResult {
 const MOBILITY_FACTORS = {
   walking: {
     sidewalk: 1.0,
-    stairs: 1.2,
+    stairs: 1.1,    // Pequeña penalización
     ramp: 1.0,
-    steep: 1.5,
-    road: 2.0 // peligroso para peatón
+    steep: 1.3,
+    road: 5.0       // Evita calles (peligroso)
   },
   wheelchair: {
     sidewalk: 1.0,
-    stairs: 10.0, // evita completamente
-    ramp: 1.0,
-    steep: 2.0,
-    road: 1.5
+    stairs: 1000.0, // EVITA COMPLETAMENTE escaleras
+    ramp: 1.0,      // Prefiere rampas
+    steep: 5.0,     // Evita pendientes pronunciadas
+    road: 3.0
   },
   car: {
-    sidewalk: 10.0, // no puede transitar
-    stairs: 10.0,
-    ramp: 10.0,
-    steep: 10.0,
-    road: 1.0 // solo en caminos
+    sidewalk: 1000.0, // NO PUEDE en aceras
+    stairs: 1000.0,
+    ramp: 1000.0,
+    steep: 1000.0,
+    road: 1.0        // SOLO en caminos/roads
   }
 };
 
@@ -155,6 +155,13 @@ export function findPathAStar(
       const neighborNode = graph.nodes.find(n => n.id === neighborId);
 
       if (!neighborNode) continue;
+
+          // ========== DEBUG LOGS ==========
+  console.log(`🔍 A* Edge: ${edge.from} → ${edge.to}`);
+  console.log(`   Type: ${edge.type}, Distance: ${edge.distance}m`);
+  console.log(`   Mobility: ${mobility}, Factor: ${MOBILITY_FACTORS[mobility][edge.type]}`);
+  // ================================
+
 
       // Calcular peso considerando movilidad
       const mobilityFactor = MOBILITY_FACTORS[mobility][edge.type];

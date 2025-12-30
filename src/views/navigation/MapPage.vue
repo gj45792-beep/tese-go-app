@@ -403,7 +403,28 @@ const graphData = {
       "coordinates": { "lat": 19.442000, "lng": -99.204000 },
       "type": "intersection",
       "buildingId": null
-    }
+    },
+    {
+  "id": "nodo-biblioteca-alt",
+  "name": "Entrada Accesible Biblioteca",
+  "coordinates": { "lat": 19.442100, "lng": -99.203900 },
+  "type": "building",
+  "buildingId": "biblioteca-central"
+},
+{
+  "id": "nodo-estacionamiento",
+  "name": "Estacionamiento Principal",
+  "coordinates": { "lat": 19.441300, "lng": -99.204800 },
+  "type": "parking",
+  "buildingId": null
+},
+{
+  "id": "nodo-biblioteca-road", 
+  "name": "Acesso Vehicular Biblioteca",
+  "coordinates": { "lat": 19.442000, "lng": -99.204000 },
+  "type": "road-access",
+  "buildingId": "biblioteca-central"
+}
   ],
   edges: [
     {
@@ -461,7 +482,50 @@ const graphData = {
       "distance": 50,
       "type": "ramp" as const,
       "baseWeight": 1.0
-    }
+    },
+    {
+     "from": "entrada-principal",
+     "to": "nodo-cafeteria", 
+     "distance": 90,
+     "type": "road" as const,  // ← NUEVO: camino para autos
+     "baseWeight": 1.0
+    },
+    {
+  "from": "nodo-interseccion-1",
+  "to": "nodo-biblioteca-alt",
+  "distance": 100,  // Más larga que las escaleras (80m)
+  "type": "ramp" as const,  // Rampa accesible
+  "baseWeight": 1.0
+},
+{
+  "from": "nodo-biblioteca-alt",
+  "to": "nodo-biblioteca", 
+  "distance": 20,
+  "type": "sidewalk" as const,
+  "baseWeight": 1.0
+},
+// Camino para autos (carretera interna)
+{
+  "from": "entrada-principal",
+  "to": "nodo-estacionamiento",
+  "distance": 60,
+  "type": "road" as const,
+  "baseWeight": 1.0
+},
+{
+  "from": "nodo-estacionamiento", 
+  "to": "nodo-biblioteca-road",
+  "distance": 70,
+  "type": "road" as const,
+  "baseWeight": 1.0
+},
+{
+  "from": "nodo-biblioteca-road",
+  "to": "nodo-biblioteca",
+  "distance": 10,
+  "type": "sidewalk" as const,
+  "baseWeight": 1.0
+}
   ]
 };
 const router = useRouter();
