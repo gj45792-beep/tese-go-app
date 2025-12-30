@@ -1,0 +1,106 @@
+{
+  "buildings": [
+    {
+      "id": "rectoria",
+      "name": "Rectoría",
+      "code": "RCT",
+      "description": "Edificio principal que alberga las oficinas de rectoría, administración y dirección.",
+      "coordinates": { "lat": 19.441877, "lng": -99.204074 },
+      "floors": 4,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Oficinas administrativas", "Sala de juntas", "Recepción"],
+      "departments": ["Rectoría", "Administración", "Dirección Académica"],
+      "image": null
+    },
+    {
+      "id": "biblioteca-central",
+      "name": "Biblioteca Central",
+      "code": "BIB",
+      "description": "Biblioteca con más de 50,000 volúmenes, sala de cómputo y áreas de estudio.",
+      "coordinates": { "lat": 19.442130, "lng": -99.203812 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Sala de lectura", "Computadoras", "Préstamo a domicilio", "Sala silenciosa"],
+      "departments": ["Biblioteca", "Centro de cómputo"],
+      "image": null
+    },
+    {
+      "id": "laboratorios-ingenieria",
+      "name": "Laboratorios de Ingeniería",
+      "code": "LAB",
+      "description": "Complejo de laboratorios para prácticas de ingeniería civil, industrial y sistemas.",
+      "coordinates": { "lat": 19.442521, "lng": -99.204312 },
+      "floors": 2,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramps": true,
+        "accessibleBathrooms": false
+      },
+      "facilities": ["Laboratorio de cómputo", "Taller mecánico", "Sala de prototipos", "Laboratorio de materiales"],
+      "departments": ["Ingeniería Civil", "Ingeniería Industrial", "Sistemas Computacionales"],
+      "image": null
+    },
+    {
+      "id": "auditorio-principal",
+      "name": "Auditorio Principal",
+      "code": "AUD",
+      "description": "Auditorio con capacidad para 500 personas, equipado para conferencias y ceremonias.",
+      "coordinates": { "lat": 19.441712, "lng": -99.203512 },
+      "floors": 1,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Proyectores HD", "Sistema de sonido", "Camerinos", "Estacionamiento VIP"],
+      "departments": ["Eventos Especiales", "Extensión Universitaria"],
+      "image": null
+    },
+    {
+      "id": "cafeteria",
+      "name": "Cafetería Central",
+      "code": "CAF",
+      "description": "Área de alimentos y bebidas para estudiantes y personal.",
+      "coordinates": { "lat": 19.442000, "lng": -99.204500 },
+      "floors": 1,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Comedor", "Cafetería", "Área de descanso", "Microondas"],
+      "departments": ["Servicios Estudiantiles"],
+      "image": null
+    },
+    {
+      "id": "edificio-aulas-a",
+      "name": "Edificio de Aulas A",
+      "code": "AUL-A",
+      "description": "Edificio con aulas para clases regulares y talleres.",
+      "coordinates": { "lat": 19.441950, "lng": -99.203950 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Aulas equipadas", "Pizarrones inteligentes", "Proyectores", "Sala de profesores"],
+      "departments": ["Todos los programas académicos"],
+      "image": null
+    }
+  ]
+}

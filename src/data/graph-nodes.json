@@ -1,0 +1,118 @@
+{
+  "nodes": [
+    {
+      "id": "entrada-principal",
+      "name": "Entrada Principal",
+      "coordinates": { "lat": 19.441500, "lng": -99.204500 },
+      "type": "entrance",
+      "buildingId": null
+    },
+    {
+      "id": "nodo-auditorio",
+      "name": "Frente Auditorio",
+      "coordinates": { "lat": 19.441712, "lng": -99.203512 },
+      "type": "building",
+      "buildingId": "auditorio-principal"
+    },
+    {
+      "id": "nodo-biblioteca",
+      "name": "Entrada Biblioteca",
+      "coordinates": { "lat": 19.442130, "lng": -99.203812 },
+      "type": "building",
+      "buildingId": "biblioteca-central"
+    },
+    {
+      "id": "nodo-rectoria",
+      "name": "Entrada Rectoría",
+      "coordinates": { "lat": 19.441877, "lng": -99.204074 },
+      "type": "building",
+      "buildingId": "rectoria"
+    },
+    {
+      "id": "nodo-laboratorios",
+      "name": "Entrada Laboratorios",
+      "coordinates": { "lat": 19.442521, "lng": -99.204312 },
+      "type": "building",
+      "buildingId": "laboratorios-ingenieria"
+    },
+    {
+      "id": "nodo-cafeteria",
+      "name": "Entrada Cafetería",
+      "coordinates": { "lat": 19.442000, "lng": -99.204500 },
+      "type": "building",
+      "buildingId": "cafeteria"
+    },
+    {
+      "id": "nodo-aulas-a",
+      "name": "Entrada Aulas A",
+      "coordinates": { "lat": 19.441950, "lng": -99.203950 },
+      "type": "building",
+      "buildingId": "edificio-aulas-a"
+    },
+    {
+      "id": "nodo-interseccion-1",
+      "name": "Intersección Central",
+      "coordinates": { "lat": 19.442000, "lng": -99.204000 },
+      "type": "intersection",
+      "buildingId": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "entrada-principal",
+      "to": "nodo-rectoria",
+      "distance": 50,
+      "type": "sidewalk",
+      "baseWeight": 1.0
+    },
+    {
+      "from": "nodo-rectoria",
+      "to": "nodo-interseccion-1",
+      "distance": 40,
+      "type": "sidewalk",
+      "baseWeight": 1.0
+    },
+    {
+      "from": "nodo-interseccion-1",
+      "to": "nodo-aulas-a",
+      "distance": 30,
+      "type": "sidewalk",
+      "baseWeight": 1.0
+    },
+    {
+      "from": "nodo-interseccion-1",
+      "to": "nodo-auditorio",
+      "distance": 60,
+      "type": "ramp",
+      "baseWeight": 1.0
+    },
+    {
+      "from": "nodo-interseccion-1",
+      "to": "nodo-biblioteca",
+      "distance": 80,
+      "type": "stairs",
+      "baseWeight": 1.5
+    },
+    {
+      "from": "nodo-biblioteca",
+      "to": "nodo-laboratorios",
+      "distance": 120,
+      "type": "steep",
+      "baseWeight": 2.0
+    },
+    {
+      "from": "nodo-interseccion-1",
+      "to": "nodo-cafeteria",
+      "distance": 70,
+      "type": "sidewalk",
+      "baseWeight": 1.0
+    },
+    {
+      "from": "nodo-aulas-a",
+      "to": "nodo-auditorio",
+      "distance": 50,
+      "type": "ramp",
+      "baseWeight": 1.0
+    }
+  ]
+}
