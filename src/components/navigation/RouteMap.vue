@@ -1,155 +1,297 @@
 <template>
   <div class="route-map-container">
     <div ref="mapContainer" class="map-container"></div>
-    
-    <div v-if="route" class="route-info">
+
+    <div v-if="route && !hideInfoOverlay" class="route-info-overlay">
+      <!-- AÑADE ESTA LÍNEA -->
+  <div style="background: yellow; padding: 5px; margin-bottom: 10px;">
+    DEBUG: hideInfoOverlay = {{ hideInfoOverlay }}, route = {{ !!route }}
+  </div>
+
       <div class="route-summary">
         <h3>Ruta Encontrada</h3>
         <p>Distancia total: {{ (route.totalDistance).toFixed(0) }} metros</p>
         <p>Pasos: {{ route.steps.length }}</p>
       </div>
-      
+
       <div class="controls">
         <ion-button @click="startNavigation" expand="block" color="primary">
           Iniciar Navegación
         </ion-button>
       </div>
     </div>
-    
-    <div v-else class="no-route">
+
+    <div v-else class="no-route-overlay">
       <p>Seleccione origen y destino para calcular ruta</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch, nextTick, PropType } from 'vue';
 import { IonButton } from '@ionic/vue';
+//import type { PropType } from 'vue';
+
+// Importar Leaflet (se hará dinámicamente para SSR)
+let L: any = null;
 
 // Definir props
-const props = defineProps<{
-  route?: {
-    path: string[];
-    totalDistance: number;
-    steps: Array<{
-      nodeId: string;
-      nodeName: string;
-      distanceFromPrevious: number;
-      cumulativeDistance: number;
-      instructions: string;
-    }>;
-    nodes: Array<{
-      id: string;
-      name: string;
-      coordinates: { lat: number; lng: number };
-      type: string;
-      buildingId: string | null;
-    }>;
-  } | null;
-}>();
+const props = defineProps({
+  route: {
+    type: Object as PropType<{
+      path: string[];
+      totalDistance: number;
+      steps: Array<{
+        nodeId: string;
+        nodeName: string;
+        distanceFromPrevious: number;
+        cumulativeDistance: number;
+        instructions: string;
+      }>;
+      nodes: Array<{
+        id: string;
+        name: string;
+        coordinates: { lat: number; lng: number };
+        type: string;
+        buildingId: string | null;
+      }>;
+    }>,
+    default: null
+  },
+  currentPath: {
+    type: Array as PropType<string[]>,
+    default: () => []
+  },
+  currentNode: {
+  type: String as PropType<string | undefined>,
+  default: undefined  // ← CAMBIA A undefined
+  },
+  hideInfoOverlay: {
+  type: Boolean,
+  default: false
+}
+});
 
+// Referencias
+const mapContainer = ref<HTMLElement | null>(null);
+let map: any = null;
+let routeLayer: any = null;
+let markersLayer: any = null;
+
+// Emitir eventos
 const emit = defineEmits<{
   'start-navigation': [];
 }>();
 
-const mapContainer = ref<HTMLElement | null>(null);
-let map: any = null;
+const startNavigation = () => {
+  emit('start-navigation');
+};
 
 // Inicializar mapa
+const initMap = async () => {
+  if (typeof window === 'undefined') return; // Para SSR
+  
+  // Cargar Leaflet dinámicamente
+  L = await import('leaflet');
+  await import('leaflet/dist/leaflet.css');
+  
+  if (!mapContainer.value) return;
+  
+  // Coordenadas del campus TESE (centro del mapa)
+  const campusCenter: [number, number] = [19.4420, -99.2040];
+  
+  // Crear mapa
+  map = L.map(mapContainer.value).setView(campusCenter, 18);
+  
+  // Agregar capa de OpenStreetMap
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(map);
+  
+  // Crear capas para marcadores y rutas
+  markersLayer = L.layerGroup().addTo(map);
+  routeLayer = L.layerGroup().addTo(map);
+  
+  // Dibujar elementos iniciales
+  drawMapElements();
+};
+
+// Dibujar elementos en el mapa
+const drawMapElements = () => {
+  if (!map || !L) return;
+  
+  // Limpiar capas anteriores
+  markersLayer.clearLayers();
+  routeLayer.clearLayers();
+  
+  // Si hay ruta, dibujarla
+  if (props.route && props.route.nodes.length > 0) {
+    drawRoute();
+    drawNodes();
+  }
+};
+
+// Dibujar nodos como marcadores
+const drawNodes = () => {
+  if (!props.route || !L) return;
+  
+  props.route.nodes.forEach(node => {
+    const isCurrent = props.currentNode === node.id;
+    const isInPath = props.currentPath.includes(node.id);
+    
+    // Color según tipo de nodo
+    let markerColor = 'blue';
+    if (node.type === 'building') markerColor = 'green';
+    if (node.type === 'entrance') markerColor = 'red';
+    if (isCurrent) markerColor = 'orange';
+    if (isInPath && !isCurrent) markerColor = 'purple';
+    
+    // Crear ícono personalizado
+    const icon = L.divIcon({
+      html: `
+        <div style="
+          background-color: ${markerColor};
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 10px;
+          font-weight: bold;
+        ">
+          ${isCurrent ? '📍' : '•'}
+        </div>
+      `,
+      className: 'custom-marker',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+    
+    // Agregar marcador
+    const marker = L.marker([node.coordinates.lat, node.coordinates.lng], { icon })
+      .addTo(markersLayer);
+    
+    // Tooltip con nombre del nodo
+    marker.bindTooltip(node.name, {
+      direction: 'top',
+      offset: [0, -10]
+    });
+  });
+};
+
+// Dibujar línea de ruta
+const drawRoute = () => {
+  if (!props.route || !L || props.route.nodes.length < 2) return;
+  
+  // Ordenar nodos según el path
+  const orderedNodes = props.route.path
+    .map(nodeId => props.route!.nodes.find(n => n.id === nodeId))
+    .filter(Boolean) as Array<{ coordinates: { lat: number; lng: number } }>;
+  
+  if (orderedNodes.length < 2) return;
+  
+  // Crear array de coordenadas
+  const latlngs = orderedNodes.map(node => 
+    [node.coordinates.lat, node.coordinates.lng] as [number, number]
+  );
+  
+  // Dibujar línea
+  const polyline = L.polyline(latlngs, {
+    color: '#3880ff',
+    weight: 4,
+    opacity: 0.8,
+    dashArray: '10, 10'
+  }).addTo(routeLayer);
+  
+  // Ajustar vista para mostrar toda la ruta
+  if (map) {
+    map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+  }
+};
+
+// Lifecycle hooks
 onMounted(() => {
-  // Esta función se implementará cuando agreguemos OpenStreetMap
-  // Por ahora es un placeholder
-  console.log('Map container ready:', mapContainer.value);
+  nextTick(() => {
+    initMap();
+  });
 });
 
-// Limpiar al desmontar
 onUnmounted(() => {
   if (map) {
-    // Limpiar recursos del mapa
+    map.remove();
+    map = null;
   }
 });
 
 // Observar cambios en la ruta
-watch(() => props.route, (newRoute) => {
-  if (newRoute && map) {
-    drawRoute(newRoute);
-  }
+watch(() => props.route, () => {
+  drawMapElements();
 }, { deep: true });
 
-// Función para dibujar ruta en el mapa
-function drawRoute(route: NonNullable<typeof props.route>) {
-  console.log('Dibujando ruta:', route);
-  // Implementar con OpenStreetMap/Leaflet más adelante
-}
-
-// Función para iniciar navegación
-function startNavigation() {
-  if (props.route) {
-    emit('start-navigation');
-  }
-}
+// Observar cambios en el nodo actual
+watch(() => props.currentNode, () => {
+  drawMapElements();
+});
 </script>
 
 <style scoped>
 .route-map-container {
   position: relative;
-  height: 400px;
   width: 100%;
+  height: 400px;
   border-radius: 12px;
   overflow: hidden;
-}
-
-.map-container {
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  font-weight: 500;
-}
-
-.route-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 16px;
-  border-top: 1px solid #eee;
-  backdrop-filter: blur(10px);
-}
-
-.route-summary h3 {
-  margin: 0 0 8px 0;
-  color: #2c3e50;
-}
-
-.route-summary p {
-  margin: 4px 0;
-  color: #666;
-  font-size: 14px;
-}
-
-.controls {
-  margin-top: 12px;
-}
-
-.no-route {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.no-route p {
-  margin: 0;
-  color: #666;
+.map-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.route-info-overlay,
+.no-route-overlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 16px;
+  border-radius: 8px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.no-route-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.route-summary h3 {
+  margin-top: 0;
+  color: var(--ion-color-primary);
+}
+
+.controls {
+  margin-top: 16px;
+}
+
+@media (min-width: 768px) {
+  .route-map-container {
+    height: 500px;
+  }
+  
+  .route-info-overlay {
+    max-width: 300px;
+  }
 }
 </style>

@@ -95,7 +95,7 @@
       <div class="map-section">
         <h3>Ruta en el Mapa</h3>
         <RouteMap 
-          :route="calculatedRoute"
+          :route="calculatedRoute as any"
           @start-navigation="startNavigation"
         />
         
@@ -622,12 +622,27 @@ const calculateRoute = async () => {
 
 const startNavigation = () => {
   if (calculatedRoute.value) {
+       // ============ DEBUG ============
+    console.log("🔍 [DEBUG MapPage] startNavigation");
+    console.log("📍 selectedStart:", selectedStart.value);
+    console.log("📍 selectedEnd:", selectedEnd.value);
+    console.log("🚗 mobilityType:", mobilityType.value);
+    console.log("🗺️ Ruta calculada:", calculatedRoute.value);
+    // ============ FIN DEBUG ============
+    // Encontrar nombres de los nodos para mostrar en la navegación
+    const fromNode = navigationGraph.value.nodes.find(n => n.id === selectedStart.value);
+    const toNode = navigationGraph.value.nodes.find(n => n.id === selectedEnd.value);
+    
+    // Pasar la ruta completa como parámetro
     router.push({
-      path: '/app/navigation',
+      path: "/app/navigation/route",
       query: {
         from: selectedStart.value,
         to: selectedEnd.value,
-        mobility: mobilityType.value
+        mobility: mobilityType.value,
+        routeData: JSON.stringify(calculatedRoute.value),
+        fromName: fromNode?.name || selectedStart.value,
+        toName: toNode?.name || selectedEnd.value
       }
     });
   }
