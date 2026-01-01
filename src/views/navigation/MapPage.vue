@@ -98,7 +98,24 @@
           :route="calculatedRoute as any"
           @start-navigation="startNavigation"
         />
-        
+        <!-- Overlay de información de ruta -->
+        <div v-if="calculatedRoute" class="map-overlay">
+         <div class="overlay-content">
+           <h3>Ruta Encontrada</h3>
+            <p>Distancia total: {{ calculatedRoute.totalDistance.toFixed(0) }} metros</p>
+            <p>Pasos: {{ calculatedRoute.steps.length }}</p>
+    
+          <ion-button 
+           @click="startNavigation" 
+           expand="block" 
+           color="primary"
+           class="ion-margin-top"
+          >
+         <ion-icon :icon="arrowForwardOutline" slot="start" />
+          Iniciar Navegación
+          </ion-button>
+  </div>
+</div>
         <div v-if="!calculatedRoute" class="no-route-message">
           <p>Seleccione origen y destino para ver la ruta en el mapa</p>
           <p class="hint">Ruta por defecto: Entrada Principal → Biblioteca Central</p>
@@ -800,5 +817,32 @@ onMounted(() => {
 
 .quick-actions ion-button {
   flex: 1;
+}
+.map-overlay {
+  position: relative; /* Cambia de absolute a relative */
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 16px;
+  border-radius: 8px;
+  z-index: 10; /* Reduce z-index */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 16px 0; /* Espaciado vertical */
+}
+
+.overlay-content h3 {
+  margin-top: 0;
+  color: var(--ion-color-primary);
+}
+
+.overlay-content p {
+  margin: 8px 0;
+  color: var(--ion-color-medium);
+}
+
+.map-section {
+  position: relative;
+  margin-bottom: 20px;
 }
 </style>

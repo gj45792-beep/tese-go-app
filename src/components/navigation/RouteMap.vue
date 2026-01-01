@@ -1,29 +1,7 @@
 <template>
   <div class="route-map-container">
     <div ref="mapContainer" class="map-container"></div>
-
-    <div v-if="route && !hideInfoOverlay" class="route-info-overlay">
-      <!-- AÑADE ESTA LÍNEA -->
-  <div style="background: yellow; padding: 5px; margin-bottom: 10px;">
-    DEBUG: hideInfoOverlay = {{ hideInfoOverlay }}, route = {{ !!route }}
-  </div>
-
-      <div class="route-summary">
-        <h3>Ruta Encontrada</h3>
-        <p>Distancia total: {{ (route.totalDistance).toFixed(0) }} metros</p>
-        <p>Pasos: {{ route.steps.length }}</p>
-      </div>
-
-      <div class="controls">
-        <ion-button @click="startNavigation" expand="block" color="primary">
-          Iniciar Navegación
-        </ion-button>
-      </div>
-    </div>
-
-    <div v-else class="no-route-overlay">
-      <p>Seleccione origen y destino para calcular ruta</p>
-    </div>
+       
   </div>
 </template>
 
@@ -65,11 +43,7 @@ const props = defineProps({
   currentNode: {
   type: String as PropType<string | undefined>,
   default: undefined  // ← CAMBIA A undefined
-  },
-  hideInfoOverlay: {
-  type: Boolean,
-  default: false
-}
+  }
 });
 
 // Referencias
@@ -77,15 +51,6 @@ const mapContainer = ref<HTMLElement | null>(null);
 let map: any = null;
 let routeLayer: any = null;
 let markersLayer: any = null;
-
-// Emitir eventos
-const emit = defineEmits<{
-  'start-navigation': [];
-}>();
-
-const startNavigation = () => {
-  emit('start-navigation');
-};
 
 // Inicializar mapa
 const initMap = async () => {
@@ -119,14 +84,14 @@ const initMap = async () => {
 
 // Dibujar elementos en el mapa
 const drawMapElements = () => {
-  if (!map || !L) return;
+  if (!map || !L || !props.route || !props.route.nodes) return; // ← AÑADE !props.route.nodes
   
   // Limpiar capas anteriores
   markersLayer.clearLayers();
   routeLayer.clearLayers();
   
   // Si hay ruta, dibujarla
-  if (props.route && props.route.nodes.length > 0) {
+  if (props.route.nodes.length > 0) {  // ← Ya seguro que nodes existe
     drawRoute();
     drawNodes();
   }
