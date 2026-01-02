@@ -189,14 +189,10 @@ onMounted(() => {
 
 function loadRouteFromParams() {
   // ============ DEBUG ============
-  console.log("🔍 [DEBUG] loadRouteFromParams INICIADO");
-  console.log("📋 Parámetros URL completos:", JSON.stringify(route.query, null, 2));
-  console.log("📍 from:", route.query.from);
-  console.log("📍 to:", route.query.to);
-  console.log("🚗 mobility:", route.query.mobility);
-  console.log("🗺️ routeData presente?:", route.query.routeData ? "SÍ" : "NO");
-  console.log("🏷️ fromName:", route.query.fromName);
-  console.log("🏷️ toName:", route.query.toName);
+  console.log("🔍 [DEBUG] Parámetros recibidos en NavigationRoutePage:");
+  console.log("URL completa:", window.location.href);
+  console.log("route.query:", route.query);
+  console.log("routeData presente?", route.query.routeData ? "SÍ" : "NO");
   // ============ FIN DEBUG ============
 
   const from = route.query.from as string;
@@ -218,7 +214,8 @@ function loadRouteFromParams() {
         currentRoute.value = {
           path: parsedRoute.path,
           steps: parsedRoute.steps || [],
-          totalDistance: parsedRoute.totalDistance || 0
+          totalDistance: parsedRoute.totalDistance || 0,
+          nodes: parsedRoute.nodes || []
         };
         console.log("Ruta cargada desde MapPage:", currentRoute.value);
       } catch (error) {

@@ -63,7 +63,7 @@ const initMap = async () => {
   if (!mapContainer.value) return;
   
   // Coordenadas del campus TESE (centro del mapa)
-  const campusCenter: [number, number] = [19.4420, -99.2040];
+  const campusCenter: [number, number] = [19.5115, -99.0420]; // Centro aproximado TESE
   
   // Crear mapa
   map = L.map(mapContainer.value).setView(campusCenter, 18);
@@ -84,16 +84,27 @@ const initMap = async () => {
 
 // Dibujar elementos en el mapa
 const drawMapElements = () => {
-  if (!map || !L || !props.route || !props.route.nodes) return; // ← AÑADE !props.route.nodes
+  console.log("🔍 [RouteMap DEBUG] drawMapElements llamado");
+  console.log("props.route:", props.route);
+  console.log("props.route?.nodes:", props.route?.nodes);
+  console.log("props.route?.nodes.length:", props.route?.nodes?.length);
+  
+  if (!map || !L || !props.route || !props.route.nodes) {
+    console.log("❌ Condición falló, retornando");
+    return;
+  }
   
   // Limpiar capas anteriores
   markersLayer.clearLayers();
   routeLayer.clearLayers();
   
   // Si hay ruta, dibujarla
-  if (props.route.nodes.length > 0) {  // ← Ya seguro que nodes existe
+  if (props.route.nodes.length > 0) {
+    console.log("✅ Llamando drawRoute y drawNodes");
     drawRoute();
     drawNodes();
+  } else {
+    console.log("⚠️ props.route.nodes está vacío");
   }
 };
 
@@ -151,19 +162,31 @@ const drawNodes = () => {
 
 // Dibujar línea de ruta
 const drawRoute = () => {
-  if (!props.route || !L || props.route.nodes.length < 2) return;
+  console.log("🔍 [RouteMap DEBUG] drawRoute llamado");
+  
+  if (!props.route || !L || props.route.nodes.length < 2) {
+    console.log("❌ drawRoute: condiciones no cumplidas");
+    return;
+  }
   
   // Ordenar nodos según el path
   const orderedNodes = props.route.path
     .map(nodeId => props.route!.nodes.find(n => n.id === nodeId))
     .filter(Boolean) as Array<{ coordinates: { lat: number; lng: number } }>;
   
-  if (orderedNodes.length < 2) return;
+  console.log("Nodos ordenados encontrados:", orderedNodes.length);
+  
+  if (orderedNodes.length < 2) {
+    console.log("❌ drawRoute: menos de 2 nodos ordenados");
+    return;
+  }
   
   // Crear array de coordenadas
   const latlngs = orderedNodes.map(node => 
     [node.coordinates.lat, node.coordinates.lng] as [number, number]
   );
+  
+  console.log("Coordenadas para polyline:", latlngs);
   
   // Dibujar línea
   const polyline = L.polyline(latlngs, {
@@ -173,9 +196,12 @@ const drawRoute = () => {
     dashArray: '10, 10'
   }).addTo(routeLayer);
   
+  console.log("✅ Polyline creada y añadida");
+  
   // Ajustar vista para mostrar toda la ruta
   if (map) {
     map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+    console.log("✅ Vista ajustada a bounds de ruta");
   }
 };
 

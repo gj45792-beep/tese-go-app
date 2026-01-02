@@ -261,10 +261,10 @@ const campusBuildingsData = {
   buildings: [
     {
       "id": "rectoria",
-      "name": "Rectoría",
-      "code": "RCT",
-      "description": "Edificio principal que alberga las oficinas de rectoría, administración y dirección.",
-      "coordinates": { "lat": 19.441877, "lng": -99.204074 },
+      "name": "Gobierno TESE",
+      "code": "GOB",
+      "description": "Edificio de gobierno y administración del TESE.",
+      "coordinates": { "lat": 19.510549, "lng": -99.041236 },
       "floors": 4,
       "accessibility": {
         "wheelchair": true,
@@ -278,10 +278,10 @@ const campusBuildingsData = {
     },
     {
       "id": "biblioteca-central",
-      "name": "Biblioteca Central",
+      "name": "Biblioteca TESE",
       "code": "BIB",
       "description": "Biblioteca con más de 50,000 volúmenes, sala de cómputo y áreas de estudio.",
-      "coordinates": { "lat": 19.442130, "lng": -99.203812 },
+      "coordinates": { "lat": 19.510908, "lng": -99.041829 },
       "floors": 3,
       "accessibility": {
         "wheelchair": true,
@@ -295,10 +295,10 @@ const campusBuildingsData = {
     },
     {
       "id": "laboratorios-ingenieria",
-      "name": "Laboratorios de Ingeniería",
-      "code": "LAB",
-      "description": "Complejo de laboratorios para prácticas de ingeniería civil, industrial y sistemas.",
-      "coordinates": { "lat": 19.442521, "lng": -99.204312 },
+      "name": "División de Ingeniería Electrónica",
+      "code": "DIE",
+      "description": "Laboratorios especializados para prácticas de ingeniería electrónica.",
+      "coordinates": { "lat": 19.511355, "lng": -99.040007 },
       "floors": 2,
       "accessibility": {
         "wheelchair": true,
@@ -306,16 +306,16 @@ const campusBuildingsData = {
         "ramps": true,
         "accessibleBathrooms": false
       },
-      "facilities": ["Laboratorio de cómputo", "Taller mecánico", "Sala de prototipos", "Laboratorio de materiales"],
-      "departments": ["Ingeniería Civil", "Ingeniería Industrial", "Sistemas Computacionales"],
+      "facilities": ["Laboratorio de cómputo", "Taller electrónico", "Sala de prototipos", "Laboratorio de circuitos"],
+      "departments": ["Ingeniería Electrónica"],
       "image": null
     },
     {
       "id": "auditorio-principal",
-      "name": "Auditorio Principal",
+      "name": "Auditorio de Usos Múltiples TESE",
       "code": "AUD",
       "description": "Auditorio con capacidad para 500 personas, equipado para conferencias y ceremonias.",
-      "coordinates": { "lat": 19.441712, "lng": -99.203512 },
+      "coordinates": { "lat": 19.512159, "lng": -99.041705 },
       "floors": 1,
       "accessibility": {
         "wheelchair": true,
@@ -323,16 +323,16 @@ const campusBuildingsData = {
         "ramps": true,
         "accessibleBathrooms": true
       },
-      "facilities": ["Proyectores HD", "Sistema de sonido", "Camerinos", "Estacionamiento VIP"],
+      "facilities": ["Proyectores HD", "Sistema de sonido", "Camerinos"],
       "departments": ["Eventos Especiales", "Extensión Universitaria"],
       "image": null
     },
     {
       "id": "cafeteria",
-      "name": "Cafetería Central",
+      "name": "Cafetería TESE",
       "code": "CAF",
       "description": "Área de alimentos y bebidas para estudiantes y personal.",
-      "coordinates": { "lat": 19.442000, "lng": -99.204500 },
+      "coordinates": { "lat": 19.510549, "lng": -99.039106 },
       "floors": 1,
       "accessibility": {
         "wheelchair": true,
@@ -346,10 +346,10 @@ const campusBuildingsData = {
     },
     {
       "id": "edificio-aulas-a",
-      "name": "Edificio de Aulas A",
-      "code": "AUL-A",
-      "description": "Edificio con aulas para clases regulares y talleres.",
-      "coordinates": { "lat": 19.441950, "lng": -99.203950 },
+      "name": "División Contaduría",
+      "code": "DCO",
+      "description": "Edificio con aulas para la división de contaduría y administración.",
+      "coordinates": { "lat": 19.511274, "lng": -99.042411 },
       "floors": 3,
       "accessibility": {
         "wheelchair": true,
@@ -358,192 +358,326 @@ const campusBuildingsData = {
         "accessibleBathrooms": true
       },
       "facilities": ["Aulas equipadas", "Pizarrones inteligentes", "Proyectores", "Sala de profesores"],
-      "departments": ["Todos los programas académicos"],
+      "departments": ["Contaduría", "Administración"],
+      "image": null
+    },
+    // EDIFICIOS ADICIONALES
+    {
+      "id": "informatica",
+      "name": "División en Ingeniería en Informática",
+      "code": "DII",
+      "description": "División especializada en ingeniería en informática y tecnologías de la información.",
+      "coordinates": { "lat": 19.512827, "lng": -99.042910 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Laboratorios de cómputo", "Aulas especializadas", "Sala de servidores"],
+      "departments": ["Ingeniería en Informática"],
+      "image": null
+    },
+    {
+      "id": "sistemas",
+      "name": "División Ingeniería en Sistemas Computacionales",
+      "code": "DSC",
+      "description": "División dedicada a la ingeniería en sistemas computacionales y desarrollo de software.",
+      "coordinates": { "lat": 19.512751, "lng": -99.042271 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Laboratorios de redes", "Aulas de programación", "Sala de proyectos"],
+      "departments": ["Ingeniería en Sistemas Computacionales"],
+      "image": null
+    },
+    {
+      "id": "industrial",
+      "name": "División de Ingeniería Industrial y Mecánica",
+      "code": "DIM",
+      "description": "División para ingeniería industrial, mecánica y de procesos.",
+      "coordinates": { "lat": 19.512200, "lng": -99.042274 },
+      "floors": 2,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Taller mecánico", "Laboratorio de procesos", "Sala de diseño"],
+      "departments": ["Ingeniería Industrial", "Ingeniería Mecánica"],
+      "image": null
+    },
+    {
+      "id": "quimica",
+      "name": "División de Ingeniería Química y Bioquímica",
+      "code": "DQB",
+      "description": "División especializada en ingeniería química y bioquímica.",
+      "coordinates": { "lat": 19.509979, "lng": -99.039685 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Laboratorios químicos", "Sala de bioseguridad", "Planta piloto"],
+      "departments": ["Ingeniería Química", "Ingeniería Bioquímica"],
       "image": null
     }
   ]
 };
 const graphData = {
   nodes: [
-    {
-      "id": "entrada-principal",
-      "name": "Entrada Principal",
-      "coordinates": { "lat": 19.441500, "lng": -99.204500 },
-      "type": "entrance",
-      "buildingId": null
-    },
-    {
-      "id": "nodo-auditorio",
-      "name": "Frente Auditorio",
-      "coordinates": { "lat": 19.441712, "lng": -99.203512 },
-      "type": "building",
-      "buildingId": "auditorio-principal"
-    },
-    {
-      "id": "nodo-biblioteca",
-      "name": "Entrada Biblioteca",
-      "coordinates": { "lat": 19.442130, "lng": -99.203812 },
-      "type": "building",
-      "buildingId": "biblioteca-central"
-    },
-    {
-      "id": "nodo-rectoria",
-      "name": "Entrada Rectoría",
-      "coordinates": { "lat": 19.441877, "lng": -99.204074 },
-      "type": "building",
-      "buildingId": "rectoria"
-    },
-    {
-      "id": "nodo-laboratorios",
-      "name": "Entrada Laboratorios",
-      "coordinates": { "lat": 19.442521, "lng": -99.204312 },
-      "type": "building",
-      "buildingId": "laboratorios-ingenieria"
-    },
-    {
-      "id": "nodo-cafeteria",
-      "name": "Entrada Cafetería",
-      "coordinates": { "lat": 19.442000, "lng": -99.204500 },
-      "type": "building",
-      "buildingId": "cafeteria"
-    },
-    {
-      "id": "nodo-aulas-a",
-      "name": "Entrada Aulas A",
-      "coordinates": { "lat": 19.441950, "lng": -99.203950 },
-      "type": "building",
-      "buildingId": "edificio-aulas-a"
-    },
-    {
-      "id": "nodo-interseccion-1",
-      "name": "Intersección Central",
-      "coordinates": { "lat": 19.442000, "lng": -99.204000 },
-      "type": "intersection",
-      "buildingId": null
-    },
-    {
-  "id": "nodo-biblioteca-alt",
-  "name": "Entrada Accesible Biblioteca",
-  "coordinates": { "lat": 19.442100, "lng": -99.203900 },
-  "type": "building",
-  "buildingId": "biblioteca-central"
-},
-{
-  "id": "nodo-estacionamiento",
-  "name": "Estacionamiento Principal",
-  "coordinates": { "lat": 19.441300, "lng": -99.204800 },
-  "type": "parking",
-  "buildingId": null
-},
-{
-  "id": "nodo-biblioteca-road", 
-  "name": "Acesso Vehicular Biblioteca",
-  "coordinates": { "lat": 19.442000, "lng": -99.204000 },
-  "type": "road-access",
-  "buildingId": "biblioteca-central"
-}
-  ],
+  // ENTRADAS
+  {
+    "id": "entrada-principal",
+    "name": "Entrada Principal TESE",
+    "coordinates": { "lat": 19.510320, "lng": -99.042213 },
+    "type": "entrance",
+    "buildingId": null
+  },
+  {
+    "id": "entrada-vehicular",
+    "name": "Entrada Vehicular",
+    "coordinates": { "lat": 19.511500, "lng": -99.040800 },
+    "type": "entrance",
+    "buildingId": null
+  },
+  // EDIFICIOS PRINCIPALES
+  {
+    "id": "nodo-biblioteca",
+    "name": "Biblioteca TESE",
+    "coordinates": { "lat": 19.510908, "lng": -99.041829 },
+    "type": "building",
+    "buildingId": "biblioteca-central"
+  },
+  {
+    "id": "nodo-rectoria",
+    "name": "Gobierno TESE",
+    "coordinates": { "lat": 19.510549, "lng": -99.041236 },
+    "type": "building",
+    "buildingId": "rectoria"
+  },
+  {
+    "id": "nodo-auditorio",
+    "name": "Auditorio de Usos Múltiples",
+    "coordinates": { "lat": 19.512159, "lng": -99.041705 },
+    "type": "building",
+    "buildingId": "auditorio-principal"
+  },
+  {
+    "id": "nodo-cafeteria",
+    "name": "Cafetería TESE",
+    "coordinates": { "lat": 19.510549, "lng": -99.039106 },
+    "type": "building",
+    "buildingId": "cafeteria"
+  },
+  {
+    "id": "nodo-laboratorios",
+    "name": "División de Ingeniería Electrónica",
+    "coordinates": { "lat": 19.511355, "lng": -99.040007 },
+    "type": "building",
+    "buildingId": "laboratorios-ingenieria"
+  },
+  {
+    "id": "nodo-aulas-a",
+    "name": "División Contaduría",
+    "coordinates": { "lat": 19.511274, "lng": -99.042411 },
+    "type": "building",
+    "buildingId": "edificio-aulas-a"
+  },
+  {
+    "id": "nodo-informatica",
+    "name": "División en Ingeniería en Informática",
+    "coordinates": { "lat": 19.512827, "lng": -99.042910 },
+    "type": "building",
+    "buildingId": "informatica"
+  },
+  {
+    "id": "nodo-aeronautica",
+    "name": "Edificio W Ingeniería Aeronáutica",
+    "coordinates": { "lat": 19.512718, "lng": -99.043492 },
+    "type": "building",
+    "buildingId": "aeronautica"
+  },
+  {
+    "id": "nodo-sistemas",
+    "name": "División Ingeniería en Sistemas Computacionales",
+    "coordinates": { "lat": 19.512751, "lng": -99.042271 },
+    "type": "building",
+    "buildingId": "sistemas"
+  },
+  {
+    "id": "nodo-industrial",
+    "name": "División de Ingeniería Industrial y Mecánica",
+    "coordinates": { "lat": 19.512200, "lng": -99.042274 },
+    "type": "building",
+    "buildingId": "industrial"
+  },
+  {
+    "id": "nodo-quimica",
+    "name": "División de Ingeniería Química y Bioquímica",
+    "coordinates": { "lat": 19.509979, "lng": -99.039685 },
+    "type": "building",
+    "buildingId": "quimica"
+  },
+  // PUNTOS DE INTERÉS
+  {
+    "id": "nodo-interseccion-1",
+    "name": "Intersección Central",
+    "coordinates": { "lat": 19.511500, "lng": -99.042000 },
+    "type": "intersection",
+    "buildingId": null
+  },
+  {
+    "id": "nodo-estacionamiento",
+    "name": "Estacionamiento Principal",
+    "coordinates": { "lat": 19.511992, "lng": -99.040528 },
+    "type": "parking",
+    "buildingId": null
+  }
+],
   edges: [
-    {
-      "from": "entrada-principal",
-      "to": "nodo-rectoria",
-      "distance": 50,
-      "type": "sidewalk" as const,
-      "baseWeight": 1.0
-    },
-    {
-      "from": "nodo-rectoria",
-      "to": "nodo-interseccion-1",
-      "distance": 40,
-      "type": "sidewalk" as const,
-      "baseWeight": 1.0
-    },
-    {
-      "from": "nodo-interseccion-1",
-      "to": "nodo-aulas-a",
-      "distance": 30,
-      "type": "sidewalk" as const,
-      "baseWeight": 1.0
-    },
-    {
-      "from": "nodo-interseccion-1",
-      "to": "nodo-auditorio",
-      "distance": 60,
-      "type": "ramp" as const,
-      "baseWeight": 1.0
-    },
-    {
-      "from": "nodo-interseccion-1",
-      "to": "nodo-biblioteca",
-      "distance": 80,
-      "type": "stairs" as const,
-      "baseWeight": 1.5
-    },
-    {
-      "from": "nodo-biblioteca",
-      "to": "nodo-laboratorios",
-      "distance": 120,
-      "type": "steep" as const,
-      "baseWeight": 2.0
-    },
-    {
-      "from": "nodo-interseccion-1",
-      "to": "nodo-cafeteria",
-      "distance": 70,
-      "type": "sidewalk" as const,
-      "baseWeight": 1.0
-    },
-    {
-      "from": "nodo-aulas-a",
-      "to": "nodo-auditorio",
-      "distance": 50,
-      "type": "ramp" as const,
-      "baseWeight": 1.0
-    },
-    {
-     "from": "entrada-principal",
-     "to": "nodo-cafeteria", 
-     "distance": 90,
-     "type": "road" as const,  // ← NUEVO: camino para autos
-     "baseWeight": 1.0
-    },
-    {
-  "from": "nodo-interseccion-1",
-  "to": "nodo-biblioteca-alt",
-  "distance": 100,  // Más larga que las escaleras (80m)
-  "type": "ramp" as const,  // Rampa accesible
-  "baseWeight": 1.0
-},
-{
-  "from": "nodo-biblioteca-alt",
-  "to": "nodo-biblioteca", 
-  "distance": 20,
-  "type": "sidewalk" as const,
-  "baseWeight": 1.0
-},
-// Camino para autos (carretera interna)
-{
-  "from": "entrada-principal",
-  "to": "nodo-estacionamiento",
-  "distance": 60,
-  "type": "road" as const,
-  "baseWeight": 1.0
-},
-{
-  "from": "nodo-estacionamiento", 
-  "to": "nodo-biblioteca-road",
-  "distance": 70,
-  "type": "road" as const,
-  "baseWeight": 1.0
-},
-{
-  "from": "nodo-biblioteca-road",
-  "to": "nodo-biblioteca",
-  "distance": 10,
-  "type": "sidewalk" as const,
-  "baseWeight": 1.0
-}
-  ]
+  // CONEXIONES DESDE ENTRADA PRINCIPAL
+  {
+    "from": "entrada-principal",
+    "to": "nodo-rectoria",           // Gobierno TESE
+    "distance": 80,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "entrada-principal",
+    "to": "nodo-interseccion-1",     // Intersección Central
+    "distance": 120,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  // CONEXIONES INTersección Central
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-biblioteca",         // Biblioteca
+    "distance": 150,
+    "type": "stairs" as const,
+    "baseWeight": 1.5
+  },
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-auditorio",          // Auditorio
+    "distance": 100,
+    "type": "ramp" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-aulas-a",            // Contaduría
+    "distance": 90,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-cafeteria",          // Cafetería
+    "distance": 250,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-laboratorios",       // Electrónica
+    "distance": 180,
+    "type": "steep" as const,
+    "baseWeight": 2.0
+  },
+  // CONEXIONES ZONA ACADÉMICA (norte)
+  {
+    "from": "nodo-auditorio",
+    "to": "nodo-informatica",        // Informática
+    "distance": 120,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-informatica",
+    "to": "nodo-aeronautica",        // Aeronáutica
+    "distance": 70,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-informatica",
+    "to": "nodo-sistemas",           // Sistemas
+    "distance": 80,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-sistemas",
+    "to": "nodo-industrial",         // Industrial
+    "distance": 60,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  // RUTAS PARA SILLA DE RUEDAS (alternativas sin escaleras)
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-biblioteca",
+    "distance": 200,                 // Ruta más larga pero accesible
+    "type": "ramp" as const,
+    "baseWeight": 1.0
+  },
+  // RUTAS PARA AUTOS
+  {
+    "from": "entrada-vehicular",
+    "to": "nodo-estacionamiento",
+    "distance": 50,
+    "type": "road" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-estacionamiento",
+    "to": "nodo-biblioteca",
+    "distance": 180,
+    "type": "road" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-estacionamiento",
+    "to": "nodo-cafeteria",
+    "distance": 220,
+    "type": "road" as const,
+    "baseWeight": 1.0
+  },
+  // CONEXIONES SUR
+  {
+    "from": "nodo-cafeteria",
+    "to": "nodo-quimica",            // Química
+    "distance": 100,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  // CONEXIONES CRUZADAS
+  {
+    "from": "nodo-rectoria",
+    "to": "nodo-biblioteca",
+    "distance": 120,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-aulas-a",
+    "to": "nodo-auditorio",
+    "distance": 110,
+    "type": "ramp" as const,
+    "baseWeight": 1.0
+  }
+]
 };
 const router = useRouter();
 
