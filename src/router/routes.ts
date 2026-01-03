@@ -84,6 +84,12 @@ const routes: Array<RouteRecordRaw> = [
       name: 'EventSchedule',
       component: () => import('@/views/events/EventSchedulePage.vue'),
       },
+      // 👇 AQUÍ AGREGA ESTA NUEVA RUTA
+      {
+      path: 'ponentes',
+      name: 'Ponentes',
+      component: () => import('@/views/events/PonentesPage.vue'),
+      },  
       {
       path: 'live-navigation',
       name: 'LiveNavigation',
@@ -110,6 +116,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
     redirect: '/',
+  },
+  {
+  path: '/ponentes',
+  redirect: '/app/ponentes',
   },
 ];
 
