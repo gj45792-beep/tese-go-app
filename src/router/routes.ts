@@ -49,7 +49,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'EventDetail',
         component: () => import('@/views/events/EventDetailPage.vue'),
       },
-     {
+      {
         path: 'events/:id/map',
         name: 'EventMap',
         component: () => import('@/views/events/EventMapPage.vue'),
@@ -79,21 +79,27 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Settings',
         component: () => import('@/views/profile/SettingsPage.vue'),
       },
+      // 👇 AGREGAR TODAS ESTAS RUTAS NUEVAS
       {
-      path: 'event-schedule',
-      name: 'EventSchedule',
-      component: () => import('@/views/events/EventSchedulePage.vue'),
+        path: 'event-schedule',
+        name: 'EventSchedule',
+        component: () => import('@/views/events/EventSchedulePage.vue'),
       },
-      // 👇 AQUÍ AGREGA ESTA NUEVA RUTA
       {
-      path: 'ponentes',
-      name: 'Ponentes',
-      component: () => import('@/views/events/PonentesPage.vue'),
-      },  
+        path: 'ponentes',
+        name: 'Ponentes',
+        component: () => import('@/views/events/PonentesPage.vue'),
+      },
       {
-      path: 'live-navigation',
-      name: 'LiveNavigation',
-      component: () => import('@/views/navigation/LiveNavigationPage.vue'),
+        path: 'live-navigation',
+        name: 'LiveNavigation',
+        component: () => import('@/views/navigation/LiveNavigationPage.vue'),
+      },
+      // 👇 AGREGAR LA NUEVA RUTA DE PROTOCOLOS
+      {
+        path: 'protocols',
+        name: 'Protocols',
+        component: () => import('@/views/protocols/ProtocolsPage.vue'),
       },
     ],
   },
@@ -113,13 +119,26 @@ const routes: Array<RouteRecordRaw> = [
     path: '/profile',
     redirect: '/app/profile',
   },
+  // 👇 AGREGAR REDIRECCIONES PARA LAS NUEVAS RUTAS
+  {
+    path: '/event-schedule',
+    redirect: '/app/event-schedule',
+  },
+  {
+    path: '/ponentes',
+    redirect: '/app/ponentes',
+  },
+  {
+    path: '/live-navigation',
+    redirect: '/app/live-navigation',
+  },
+  {
+    path: '/protocols',
+    redirect: '/app/protocols',
+  },
   {
     path: '/:pathMatch(.*)*',
     redirect: '/',
-  },
-  {
-  path: '/ponentes',
-  redirect: '/app/ponentes',
   },
 ];
 
