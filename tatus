@@ -1,0 +1,9 @@
+[33m8c494d0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;33mtag: [m[1;33mrespaldo/navegacion-completa-20251227-2318[m[33m, [m[1;33mtag: [m[1;33mrespaldo/navegacion-completa-[m[33m)[m feat: Sistema de navegación completo con footer adaptativo
+[33me8e8d81[m[33m ([m[1;33mtag: [m[1;33mrespaldo/main-completo-con-componentes[m[33m, [m[1;33mtag: [m[1;33mrespaldo/antes-de-merge-a-main[m[33m, [m[1;32mfeature/componentes-reutilizables[m[33m)[m ✅ BuildingCard.vue creado e integrado en MapPage
+[33m5be1b3e[m[33m ([m[1;33mtag: [m[1;33mrespaldo/components-reutilizables-20251227[m[33m, [m[1;33mtag: [m[1;33mrespaldo/components-reutilizables-[m[33m)[m feat: Implementación de componentes reutilizables
+[33m6350c3d[m[33m ([m[1;33mtag: [m[1;33mrespaldo/punto-seguro-main[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/desarrollo/arquitectura-profesional[m[33m, [m[1;32mdesarrollo/arquitectura-profesional[m[33m)[m FEAT: WelcomePage sin header/footer para presentación limpia
+[33m65ae0c8[m[33m ([m[1;32mbackup/_pre_layouts_refactor[m[33m)[m FEAT: Autenticación Google 100% funcional. Header muestra nombre/foto, redirección a /home, UI ajustada.
+[33m35598d5[m FEAT: Autenticación con Google REAL implementada y funcionando
+[33m086d5f0[m FEAT: Componentes reutilizables Header y Footer
+[33m8c48956[m FIX: Corregidos errores críticos y configurado Pinia
+[33m6d0cb1e[m BASE: App TESE GO - Navegación rutas seguras campus (Ionic+Vue+Capacitor)

@@ -26,17 +26,22 @@
 
       <!-- Sección de eventos inteligente -->
       <div class="smart-events-container glass-card">
-        <ion-segment v-model="eventViewMode" @ionChange="changeEventView">
-          <ion-segment-button value="timeline">
-            <ion-label>Próximos eventos</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="map">
-            <ion-label>Ver en mapa</ion-label>
-          </ion-segment-button>
-        </ion-segment>
+        <!-- SOLO UN BOTÓN AHORA (sin segment) -->
+        <div class="events-header">
+          <h3 class="section-title">Próximos eventos destacados</h3>
+          <ion-button 
+            fill="clear" 
+            size="small" 
+            @click="goToEventSchedule"
+            class="view-all-btn"
+          >
+            Ver calendario completo
+            <ion-icon slot="end" :icon="calendarOutline" />
+          </ion-button>
+        </div>
 
         <!-- Vista de timeline CON EVENTCARD REUTILIZABLE -->
-        <div v-if="eventViewMode === 'timeline'" class="timeline-view">
+        <div class="timeline-view">
           <EventCard 
             v-for="event in filteredFeaturedEvents"
             :key="event.id"
@@ -48,24 +53,8 @@
               category: event.categoryId,
               tags: [getCategoryName(event.categoryId)]
             }"
-            @click="goToEventDetail"
+            @click="goToEventDetail(event.id)"
           />
-        </div>
-
-        <!-- Vista de mapa (placeholder) -->
-        <div v-else class="map-preview">
-          <img 
-            src="https://maps.googleapis.com/maps/api/staticmap?center=TESE,Ecatepec&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7CTESE,Ecatepec" 
-            alt="Mapa del TESE"
-            class="map-image"
-          >
-          <ion-button 
-            expand="block" 
-            fill="clear"
-            @click="goToMap"
-          >
-            Ver mapa completo
-          </ion-button>
         </div>
       </div>
 
@@ -88,7 +77,7 @@
         </ion-fab-list>
       </ion-fab>
     </ion-content>
-     <Footer variant="nav" activeTab="home" />
+    <Footer variant="nav" activeTab="home" />
   </ion-page>
 </template>
 
@@ -98,10 +87,7 @@ import {
   IonContent, 
   IonButton, 
   IonIcon, 
-  IonChip,
   IonLabel, 
-  IonSegment, 
-  IonSegmentButton, 
   IonFab, 
   IonFabButton, 
   IonFabList 
@@ -113,51 +99,50 @@ import {
   accessibility, 
   carSport,
   map as mapIcon, 
-  walk 
+  walk,
+  mic, // 👈 Nuevo icono para Ponentes
+  calendarOutline // 👈 Icono para calendario
 } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth.store';
+import { useAuthSimpleStore } from '@/stores/auth-simple.store';
 import { ref, computed } from 'vue';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
 import EventCard from '@/components/events/EventCard.vue';
 
 const router = useRouter();
-const authStore = useAuthStore();
+const authStore = useAuthSimpleStore();
 
 // Datos del usuario
 const user = computed(() => ({
-  name: authStore.userDisplayName || '',
+  name: authStore.displayName() || '',
   role: 'guest'
 }));
 
-// Configuración de UI
-const eventViewMode = ref('timeline');
-
-// Accesos rápidos
+// Accesos rápidos - CAMBIADO: "Aulas" → "Ponentes"
 const quickAccess = ref([
   { 
     icon: mapIcon, 
     label: 'Mapa', 
-    color: 'var(--ion-color-tese-green)', 
+    color: '#945E54', 
     action: () => router.push('/map') 
   },
   { 
-    icon: school, 
-    label: 'Aulas', 
-    color: 'var(--ion-color-primary)', 
-    action: () => router.push('/locations/classrooms') 
+    icon: mic, // 👈 Icono de micrófono
+    label: 'Ponentes', 
+    color: '#945E54',
+    action: () => router.push('/app/ponentes') // 👈 Ruta nueva
   },
   { 
     icon: accessibility, 
     label: 'Rutas accesibles', 
-    color: 'var(--ion-color-tese-mint)', 
+    color: '#945E54',
     action: () => router.push('/accessible-routes') 
   },
   { 
     icon: carSport, 
     label: 'Estacionamiento', 
-    color: 'var(--ion-color-tese-sky)', 
+    color: '#945E54', 
     action: () => router.push('/parking') 
   }
 ]);
@@ -216,23 +201,14 @@ const getCategoryName = (id: string) => {
   return categories[id] || 'Evento';
 };
 
-const getCategoryColor = (id: string) => {
-  const colors: Record<string, string> = {
-    academic: 'primary',
-    sports: 'success',
-    cultural: 'warning'
-  };
-  return colors[id] || 'medium';
-};
-
 const openSmartAssistant = () => {
   console.log('Asistente activado');
 };
 
 const goToMap = () => router.push('/map');
-const goToEventDetail = (id: number) => router.push(`/event-detail/${id}`);
+const goToEventDetail = (id: number) => router.push(`/events/${id}`);
+const goToEventSchedule = () => router.push('/app/event-schedule'); // 👈 Nueva función
 const handleShortcut = (action: Function) => action();
-const changeEventView = () => console.log('Cambiando vista:', eventViewMode.value);
 </script>
 
 <style scoped>
@@ -243,6 +219,7 @@ const changeEventView = () => console.log('Cambiando vista:', eventViewMode.valu
   --tese-corner-radius: 16px;
   --ion-color-tese-sky: #68c5ff;
   --ion-color-tese-mint: #5de2a3;
+  --ion-color-tese-purple: #9c27b0; /* 👈 Color nuevo para Ponentes */
 }
 
 /* Sección Hero */
@@ -303,26 +280,34 @@ const changeEventView = () => console.log('Cambiando vista:', eventViewMode.valu
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: var(--tese-corner-radius);
-  padding: 1rem;
+  padding: 1.5rem;
   margin-bottom: 1.5rem;
   box-shadow: var(--tese-elevation-1);
 }
 
+/* Encabezado de eventos */
+.events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.view-all-btn {
+  --color: var(--ion-color-primary);
+  font-size: 0.9rem;
+}
+
 /* Timeline de eventos */
 .timeline-view {
-  margin-top: 1rem;
-}
-
-/* Vista de mapa */
-.map-preview {
-  margin-top: 1rem;
-}
-
-.map-image {
-  width: 100%;
-  border-radius: 12px;
-  height: 180px;
-  object-fit: cover;
+  margin-top: 0.5rem;
 }
 
 /* Responsive */
@@ -333,6 +318,18 @@ const changeEventView = () => console.log('Cambiando vista:', eventViewMode.valu
   
   .hero-section {
     padding: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .events-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .view-all-btn {
+    align-self: flex-end;
   }
 }
 </style>

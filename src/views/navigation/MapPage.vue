@@ -1,114 +1,197 @@
 <template>
   <ion-page>
     <!-- Header reutilizable -->
-    <Header title="Mapa del Campus" :show-logo="true" />
+    <Header title="Navegación Inteligente" :show-logo="true" />
 
     <!-- Contenido principal -->
     <ion-content class="ion-padding" :fullscreen="true">
-      <!-- Selector de tipo de movilidad -->
-      <div class="mobility-selector">
-        <ion-segment v-model="mobilityType" @ionChange="changeMobilityType">
-          <ion-segment-button value="walking">
-            <ion-icon :icon="walkOutline" />
-            <ion-label>A pie</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="vehicle">
-            <ion-icon :icon="carOutline" />
-            <ion-label>En auto</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="accessible">
-            <ion-icon :icon="accessibilityOutline" />
-            <ion-label>Accesible</ion-label>
-          </ion-segment-button>
-        </ion-segment>
+      <!-- Selector de movilidad mejorado -->
+      <div class="mobility-section">
+        <h3>¿Cómo te mueves?</h3>
+        <MobilitySelector 
+          :initial-mobility="mobilityType"
+          @mobility-changed="handleMobilityChange"
+        />
       </div>
 
-      <!-- Contenedor del mapa -->
-      <div class="map-container">
-        <!-- Mapa placeholder -->
-        <div class="map-placeholder">
-          <div class="map-overlay">
-            <h3>Mapa Interactivo TESE</h3>
-            <p>📍 Ubicación actual: {{ currentLocation }}</p>
-            <p>🏛️ Edificio más cercano: {{ nearestBuilding }}</p>
-            
-            <!-- Puntos de interés simulados -->
-            <div class="points-of-interest">
-              <div 
-                v-for="poi in pointsOfInterest" 
-                :key="poi.id"
-                class="poi-item"
-                :style="{ top: poi.top + '%', left: poi.left + '%' }"
-                @click="selectPOI(poi)"
-              >
-                <div class="poi-marker" :class="poi.type">
-                  <ion-icon :icon="getPoiIcon(poi.type)" />
-                </div>
-                <div class="poi-label">{{ poi.name }}</div>
-              </div>
-            </div>
-          </div>
+      <!-- Selectores de origen y destino -->
+      <div class="route-controls">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Planificar Ruta</ion-card-title>
+          </ion-card-header>
           
-          <img 
-            src="@/assets/images/campus-map.jpg" 
-            alt="Mapa del Campus TESE"
-            class="campus-map"
-          />
-        </div>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-label position="stacked">Origen</ion-label>
+                    <ion-select 
+                      v-model="selectedStart" 
+                      placeholder="Seleccionar origen"
+                      interface="popover"
+                    >
+                      <ion-select-option 
+                        v-for="option in startOptions" 
+                        :key="option.value" 
+                        :value="option.value"
+                      >
+                        {{ option.label }}
+                      </ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </ion-col>
+                
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-label position="stacked">Destino</ion-label>
+                    <ion-select 
+                      v-model="selectedEnd" 
+                      placeholder="Seleccionar destino"
+                      interface="popover"
+                    >
+                      <ion-select-option 
+                        v-for="option in endOptions" 
+                        :key="option.value" 
+                        :value="option.value"
+                      >
+                        {{ option.label }}
+                      </ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+              
+              <ion-row>
+                <ion-col size="12">
+                  <ion-button 
+                    @click="calculateRoute" 
+                    expand="block" 
+                    :disabled="isLoading || !selectedStart || !selectedEnd"
+                  >
+                    <ion-icon :icon="navigateOutline" slot="start" />
+                    {{ isLoading ? 'Calculando...' : 'Calcular Ruta' }}
+                  </ion-button>
+                  
+                  <ion-button 
+                    v-if="calculatedRoute" 
+                    @click="clearRoute" 
+                    expand="block" 
+                    fill="outline" 
+                    color="medium"
+                    class="ion-margin-top"
+                  >
+                    Limpiar Ruta
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </div>
 
-        <!-- Información del edificio seleccionado CON BUILDINGCARD REUTILIZABLE -->
-        <div v-if="selectedPOI" class="building-info">
+      <!-- Mapa con ruta -->
+      <div class="map-section">
+        <h3>Ruta en el Mapa</h3>
+        <RouteMap 
+          :route="calculatedRoute as any"
+          @start-navigation="startNavigation"
+        />
+        <!-- Overlay de información de ruta -->
+        <div v-if="calculatedRoute" class="map-overlay">
+         <div class="overlay-content">
+           <h3>Ruta Encontrada</h3>
+            <p>Distancia total: {{ calculatedRoute.totalDistance.toFixed(0) }} metros</p>
+            <p>Pasos: {{ calculatedRoute.steps.length }}</p>
+    
+          <ion-button 
+           @click="startNavigation" 
+           expand="block" 
+           color="primary"
+           class="ion-margin-top"
+          >
+         <ion-icon :icon="arrowForwardOutline" slot="start" />
+          Iniciar Navegación
+          </ion-button>
+  </div>
+</div>
+        <div v-if="!calculatedRoute" class="no-route-message">
+          <p>Seleccione origen y destino para ver la ruta en el mapa</p>
+          <p class="hint">Ruta por defecto: Entrada Principal → Biblioteca Central</p>
+        </div>
+      </div>
+
+      <!-- Instrucciones de navegación -->
+      <div v-if="calculatedRoute && showRouteDetails" class="navigation-section">
+        <h3>Instrucciones Paso a Paso</h3>
+        <NavigationSteps 
+          :steps="calculatedRoute.steps"
+          :total-distance="calculatedRoute.totalDistance"
+          @step-selected="(index) => console.log('Paso seleccionado:', index)"
+        />
+        
+        <div class="route-summary">
+          <ion-card>
+            <ion-card-content>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="6">
+                    <div class="summary-item">
+                      <strong>Distancia total:</strong>
+                      <p>{{ calculatedRoute.totalDistance.toFixed(0) }} metros</p>
+                    </div>
+                  </ion-col>
+                  <ion-col size="6">
+                    <div class="summary-item">
+                      <strong>Pasos:</strong>
+                      <p>{{ calculatedRoute.steps.length }}</p>
+                    </div>
+                  </ion-col>
+                </ion-row>
+                
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-button 
+                      @click="startNavigation" 
+                      expand="block" 
+                      color="primary"
+                      class="ion-margin-top"
+                    >
+                      <ion-icon :icon="arrowForwardOutline" slot="start" />
+                      Iniciar Navegación
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </div>
+
+      <!-- Información de edificios -->
+       <!-- Comentar temporalmente:
+      <div class="buildings-section">
+        <h3>Edificios del Campus</h3>
+        <div class="buildings-grid">
           <BuildingCard 
+            v-for="buildingItem in campusBuildings.slice(0, 4)"
+            :key="buildingItem.id"
             :building="{
-              id: selectedPOI.id,
-              name: selectedPOI.name,
-              description: selectedPOI.description,
-              category: selectedPOI.type,
-              services: selectedPOI.services,
-              distance: 150, // Ejemplo: 150 metros
-              status: 'open',
-              schedule: '7:00 AM - 10:00 PM'
-            }"
-            :show-details-button="true"
-            @click="selectPOI(selectedPOI)"
-            @navigate="navigateTo(selectedPOI)"
-            @details="goToBuildingDetail(selectedPOI.id)"
+                id: buildingItem.id,
+                name: buildingItem.name,
+                code: buildingItem.code,
+                description: buildingItem.description,
+                services: buildingItem.facilities  // ← CAMBIAR facilities por services
+             }"
+               @select="(id) => selectedEnd = getNodeIdFromBuilding(id)"
           />
         </div>
       </div>
-
-      <!-- Botones de acción rápida -->
-      <div class="quick-actions">
-        <ion-button @click="findNearestRestroom" fill="outline">
-          <ion-icon :icon="waterOutline" slot="start" />
-          Baño más cercano
-        </ion-button>
-        
-        <ion-button @click="findParking" fill="outline">
-          <ion-icon :icon="carOutline" slot="start" />
-          Estacionamiento
-        </ion-button>
-        
-        <ion-button @click="showRoutePlanner" fill="outline">
-          <ion-icon :icon="mapOutline" slot="start" />
-          Planificar ruta
-        </ion-button>
-      </div>
-
-      <!-- Botón flotante para mi ubicación -->
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button @click="centerOnUser" color="primary">
-          <ion-icon :icon="locateOutline" />
-        </ion-fab-button>
-        <ion-fab-list side="top">
-          <ion-fab-button @click="toggleSatellite" color="light">
-            <ion-icon :icon="earthOutline" />
-          </ion-fab-button>
-        </ion-fab-list>
-      </ion-fab>
+       -->
+      <!-- Footer -->
+      <Footer />
     </ion-content>
-
-    <Footer variant="nav" activeTab="map" />
   </ion-page>
 </template>
 
@@ -124,143 +207,638 @@ import {
   IonChip,
   IonFab,
   IonFabButton,
-  IonFabList
+  IonFabList,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonSelect,
+  IonSelectOption,
+  IonItem,
+  IonList,
+  IonNote
 } from '@ionic/vue';
 import { 
   walkOutline,
   carOutline,
   accessibilityOutline,
   navigateOutline,
-  waterOutline,
-  mapOutline,
   locateOutline,
   earthOutline,
   schoolOutline,
   libraryOutline,
   restaurantOutline,
   medkitOutline,
-  businessOutline
+  businessOutline,
+  searchOutline,
+  arrowForwardOutline,
+  chevronDownOutline
 } from 'ionicons/icons';
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+
+// Importar componentes creados ayer
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
 import BuildingCard from '@/components/campus/BuildingCard.vue';
+import RouteMap from '@/components/navigation/RouteMap.vue';
+import NavigationSteps from '@/components/navigation/NavigationSteps.vue';
+import MobilitySelector from '@/components/campus/MobilitySelector.vue';
 
+// Importar algoritmo A* y tipos
+import { 
+  findPathAStar, 
+  findNearestNode,
+  type Graph,
+  type PathResult,
+  type Node 
+} from '@/utils/algorithms/a-star';
+
+const campusBuildingsData = {
+  buildings: [
+    {
+      "id": "rectoria",
+      "name": "Gobierno TESE",
+      "code": "GOB",
+      "description": "Edificio de gobierno y administración del TESE.",
+      "coordinates": { "lat": 19.510549, "lng": -99.041236 },
+      "floors": 4,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Oficinas administrativas", "Sala de juntas", "Recepción"],
+      "departments": ["Rectoría", "Administración", "Dirección Académica"],
+      "image": null
+    },
+    {
+      "id": "biblioteca-central",
+      "name": "Biblioteca TESE",
+      "code": "BIB",
+      "description": "Biblioteca con más de 50,000 volúmenes, sala de cómputo y áreas de estudio.",
+      "coordinates": { "lat": 19.510908, "lng": -99.041829 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Sala de lectura", "Computadoras", "Préstamo a domicilio", "Sala silenciosa"],
+      "departments": ["Biblioteca", "Centro de cómputo"],
+      "image": null
+    },
+    {
+      "id": "laboratorios-ingenieria",
+      "name": "División de Ingeniería Electrónica",
+      "code": "DIE",
+      "description": "Laboratorios especializados para prácticas de ingeniería electrónica.",
+      "coordinates": { "lat": 19.511355, "lng": -99.040007 },
+      "floors": 2,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramps": true,
+        "accessibleBathrooms": false
+      },
+      "facilities": ["Laboratorio de cómputo", "Taller electrónico", "Sala de prototipos", "Laboratorio de circuitos"],
+      "departments": ["Ingeniería Electrónica"],
+      "image": null
+    },
+    {
+      "id": "auditorio-principal",
+      "name": "Auditorio de Usos Múltiples TESE",
+      "code": "AUD",
+      "description": "Auditorio con capacidad para 500 personas, equipado para conferencias y ceremonias.",
+      "coordinates": { "lat": 19.512159, "lng": -99.041705 },
+      "floors": 1,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Proyectores HD", "Sistema de sonido", "Camerinos"],
+      "departments": ["Eventos Especiales", "Extensión Universitaria"],
+      "image": null
+    },
+    {
+      "id": "cafeteria",
+      "name": "Cafetería TESE",
+      "code": "CAF",
+      "description": "Área de alimentos y bebidas para estudiantes y personal.",
+      "coordinates": { "lat": 19.510549, "lng": -99.039106 },
+      "floors": 1,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Comedor", "Cafetería", "Área de descanso", "Microondas"],
+      "departments": ["Servicios Estudiantiles"],
+      "image": null
+    },
+    {
+      "id": "edificio-aulas-a",
+      "name": "División Contaduría",
+      "code": "DCO",
+      "description": "Edificio con aulas para la división de contaduría y administración.",
+      "coordinates": { "lat": 19.511274, "lng": -99.042411 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Aulas equipadas", "Pizarrones inteligentes", "Proyectores", "Sala de profesores"],
+      "departments": ["Contaduría", "Administración"],
+      "image": null
+    },
+    // EDIFICIOS ADICIONALES
+    {
+      "id": "informatica",
+      "name": "División en Ingeniería en Informática",
+      "code": "DII",
+      "description": "División especializada en ingeniería en informática y tecnologías de la información.",
+      "coordinates": { "lat": 19.512827, "lng": -99.042910 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Laboratorios de cómputo", "Aulas especializadas", "Sala de servidores"],
+      "departments": ["Ingeniería en Informática"],
+      "image": null
+    },
+    {
+      "id": "sistemas",
+      "name": "División Ingeniería en Sistemas Computacionales",
+      "code": "DSC",
+      "description": "División dedicada a la ingeniería en sistemas computacionales y desarrollo de software.",
+      "coordinates": { "lat": 19.512751, "lng": -99.042271 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Laboratorios de redes", "Aulas de programación", "Sala de proyectos"],
+      "departments": ["Ingeniería en Sistemas Computacionales"],
+      "image": null
+    },
+    {
+      "id": "industrial",
+      "name": "División de Ingeniería Industrial y Mecánica",
+      "code": "DIM",
+      "description": "División para ingeniería industrial, mecánica y de procesos.",
+      "coordinates": { "lat": 19.512200, "lng": -99.042274 },
+      "floors": 2,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Taller mecánico", "Laboratorio de procesos", "Sala de diseño"],
+      "departments": ["Ingeniería Industrial", "Ingeniería Mecánica"],
+      "image": null
+    },
+    {
+      "id": "quimica",
+      "name": "División de Ingeniería Química y Bioquímica",
+      "code": "DQB",
+      "description": "División especializada en ingeniería química y bioquímica.",
+      "coordinates": { "lat": 19.509979, "lng": -99.039685 },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramps": true,
+        "accessibleBathrooms": true
+      },
+      "facilities": ["Laboratorios químicos", "Sala de bioseguridad", "Planta piloto"],
+      "departments": ["Ingeniería Química", "Ingeniería Bioquímica"],
+      "image": null
+    }
+  ]
+};
+const graphData = {
+  nodes: [
+  // ENTRADAS
+  {
+    "id": "entrada-principal",
+    "name": "Entrada Principal TESE",
+    "coordinates": { "lat": 19.510320, "lng": -99.042213 },
+    "type": "entrance",
+    "buildingId": null
+  },
+  {
+    "id": "entrada-vehicular",
+    "name": "Entrada Vehicular",
+    "coordinates": { "lat": 19.511500, "lng": -99.040800 },
+    "type": "entrance",
+    "buildingId": null
+  },
+  // EDIFICIOS PRINCIPALES
+  {
+    "id": "nodo-biblioteca",
+    "name": "Biblioteca TESE",
+    "coordinates": { "lat": 19.510908, "lng": -99.041829 },
+    "type": "building",
+    "buildingId": "biblioteca-central"
+  },
+  {
+    "id": "nodo-rectoria",
+    "name": "Gobierno TESE",
+    "coordinates": { "lat": 19.510549, "lng": -99.041236 },
+    "type": "building",
+    "buildingId": "rectoria"
+  },
+  {
+    "id": "nodo-auditorio",
+    "name": "Auditorio de Usos Múltiples",
+    "coordinates": { "lat": 19.512159, "lng": -99.041705 },
+    "type": "building",
+    "buildingId": "auditorio-principal"
+  },
+  {
+    "id": "nodo-cafeteria",
+    "name": "Cafetería TESE",
+    "coordinates": { "lat": 19.510549, "lng": -99.039106 },
+    "type": "building",
+    "buildingId": "cafeteria"
+  },
+  {
+    "id": "nodo-laboratorios",
+    "name": "División de Ingeniería Electrónica",
+    "coordinates": { "lat": 19.511355, "lng": -99.040007 },
+    "type": "building",
+    "buildingId": "laboratorios-ingenieria"
+  },
+  {
+    "id": "nodo-aulas-a",
+    "name": "División Contaduría",
+    "coordinates": { "lat": 19.511274, "lng": -99.042411 },
+    "type": "building",
+    "buildingId": "edificio-aulas-a"
+  },
+  {
+    "id": "nodo-informatica",
+    "name": "División en Ingeniería en Informática",
+    "coordinates": { "lat": 19.512827, "lng": -99.042910 },
+    "type": "building",
+    "buildingId": "informatica"
+  },
+  {
+    "id": "nodo-aeronautica",
+    "name": "Edificio W Ingeniería Aeronáutica",
+    "coordinates": { "lat": 19.512718, "lng": -99.043492 },
+    "type": "building",
+    "buildingId": "aeronautica"
+  },
+  {
+    "id": "nodo-sistemas",
+    "name": "División Ingeniería en Sistemas Computacionales",
+    "coordinates": { "lat": 19.512751, "lng": -99.042271 },
+    "type": "building",
+    "buildingId": "sistemas"
+  },
+  {
+    "id": "nodo-industrial",
+    "name": "División de Ingeniería Industrial y Mecánica",
+    "coordinates": { "lat": 19.512200, "lng": -99.042274 },
+    "type": "building",
+    "buildingId": "industrial"
+  },
+  {
+    "id": "nodo-quimica",
+    "name": "División de Ingeniería Química y Bioquímica",
+    "coordinates": { "lat": 19.509979, "lng": -99.039685 },
+    "type": "building",
+    "buildingId": "quimica"
+  },
+  // PUNTOS DE INTERÉS
+  {
+    "id": "nodo-interseccion-1",
+    "name": "Intersección Central",
+    "coordinates": { "lat": 19.511500, "lng": -99.042000 },
+    "type": "intersection",
+    "buildingId": null
+  },
+  {
+    "id": "nodo-estacionamiento",
+    "name": "Estacionamiento Principal",
+    "coordinates": { "lat": 19.511992, "lng": -99.040528 },
+    "type": "parking",
+    "buildingId": null
+  }
+],
+  edges: [
+  // CONEXIONES DESDE ENTRADA PRINCIPAL
+  {
+    "from": "entrada-principal",
+    "to": "nodo-rectoria",           // Gobierno TESE
+    "distance": 80,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "entrada-principal",
+    "to": "nodo-interseccion-1",     // Intersección Central
+    "distance": 120,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  // CONEXIONES INTersección Central
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-biblioteca",         // Biblioteca
+    "distance": 150,
+    "type": "stairs" as const,
+    "baseWeight": 1.5
+  },
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-auditorio",          // Auditorio
+    "distance": 100,
+    "type": "ramp" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-aulas-a",            // Contaduría
+    "distance": 90,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-cafeteria",          // Cafetería
+    "distance": 250,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-laboratorios",       // Electrónica
+    "distance": 180,
+    "type": "steep" as const,
+    "baseWeight": 2.0
+  },
+  // CONEXIONES ZONA ACADÉMICA (norte)
+  {
+    "from": "nodo-auditorio",
+    "to": "nodo-informatica",        // Informática
+    "distance": 120,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-informatica",
+    "to": "nodo-aeronautica",        // Aeronáutica
+    "distance": 70,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-informatica",
+    "to": "nodo-sistemas",           // Sistemas
+    "distance": 80,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-sistemas",
+    "to": "nodo-industrial",         // Industrial
+    "distance": 60,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  // RUTAS PARA SILLA DE RUEDAS (alternativas sin escaleras)
+  {
+    "from": "nodo-interseccion-1",
+    "to": "nodo-biblioteca",
+    "distance": 200,                 // Ruta más larga pero accesible
+    "type": "ramp" as const,
+    "baseWeight": 1.0
+  },
+  // RUTAS PARA AUTOS
+  {
+    "from": "entrada-vehicular",
+    "to": "nodo-estacionamiento",
+    "distance": 50,
+    "type": "road" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-estacionamiento",
+    "to": "nodo-biblioteca",
+    "distance": 180,
+    "type": "road" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-estacionamiento",
+    "to": "nodo-cafeteria",
+    "distance": 220,
+    "type": "road" as const,
+    "baseWeight": 1.0
+  },
+  // CONEXIONES SUR
+  {
+    "from": "nodo-cafeteria",
+    "to": "nodo-quimica",            // Química
+    "distance": 100,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  // CONEXIONES CRUZADAS
+  {
+    "from": "nodo-rectoria",
+    "to": "nodo-biblioteca",
+    "distance": 120,
+    "type": "sidewalk" as const,
+    "baseWeight": 1.0
+  },
+  {
+    "from": "nodo-aulas-a",
+    "to": "nodo-auditorio",
+    "distance": 110,
+    "type": "ramp" as const,
+    "baseWeight": 1.0
+  }
+]
+};
 const router = useRouter();
 
-// Estado
-const mobilityType = ref('walking');
-const currentLocation = ref('Edificio A - Sala de Computo');
-const nearestBuilding = ref('Biblioteca Central');
-const selectedPOI = ref<any>(null);
+// ======================
+// ESTADO REACTIVO
+// ======================
+const mobilityType = ref<'walking' | 'wheelchair' | 'car'>('walking');
+const selectedStart = ref<string>('entrada-principal');
+const selectedEnd = ref<string>('nodo-biblioteca');
+const calculatedRoute = ref<PathResult | null>(null);
+const isLoading = ref(false);
+const showRouteDetails = ref(false);
 
-// Puntos de interés del campus
-const pointsOfInterest = ref([
-  {
-    id: 1,
-    name: 'Edificio A',
-    type: 'academic',
-    top: 30,
-    left: 40,
-    description: 'Edificio de aulas principales y salas de cómputo',
-    services: ['Aulas', 'Computo', 'Cafetería']
-  },
-  {
-    id: 2,
-    name: 'Biblioteca',
-    type: 'library',
-    top: 50,
-    left: 60,
-    description: 'Biblioteca central con sala de estudio y recursos digitales',
-    services: ['Libros', 'Estudio', 'Computadoras']
-  },
-  {
-    id: 3,
-    name: 'Canchas Deportivas',
-    type: 'sports',
-    top: 70,
-    left: 30,
-    description: 'Área deportiva con canchas de fútbol, básquetbol y voleibol',
-    services: ['Fútbol', 'Básquetbol', 'Voleibol']
-  },
-  {
-    id: 4,
-    name: 'Cafetería',
-    type: 'food',
-    top: 40,
-    left: 20,
-    description: 'Cafetería principal con variedad de alimentos',
-    services: ['Comida', 'Bebidas', 'Snacks']
-  },
-  {
-    id: 5,
-    name: 'Enfermería',
-    type: 'medical',
-    top: 60,
-    left: 80,
-    description: 'Servicio médico y primeros auxilios',
-    services: ['Médico', 'Medicamentos', 'Emergencias']
-  },
-  {
-    id: 6,
-    name: 'Auditorio',
-    type: 'event',
-    top: 20,
-    left: 70,
-    description: 'Auditorio principal para eventos y conferencias',
-    services: ['Eventos', 'Conferencias', 'Presentaciones']
+// ======================
+// CARGAR DATOS
+// ======================
+const campusBuildings = ref(campusBuildingsData.buildings);
+const navigationGraph = ref<Graph>({
+  nodes: graphData.nodes,
+  edges: graphData.edges
+});
+
+// ======================
+// LISTAS PARA SELECTORES
+// ======================
+const startOptions = computed(() => {
+  return navigationGraph.value.nodes
+    .filter(node => node.type === 'entrance' || node.type === 'building')
+    .map(node => ({
+      value: node.id,
+      label: node.name,
+      buildingId: node.buildingId
+    }));
+});
+
+const endOptions = computed(() => {
+  return navigationGraph.value.nodes
+    .filter(node => node.type === 'building')
+    .map(node => ({
+      value: node.id,
+      label: node.name,
+      buildingId: node.buildingId
+    }));
+});
+
+// ======================
+// MÉTODOS
+// ======================
+const calculateRoute = async () => {
+  console.log('=== CALCULANDO RUTA ===');
+  console.log('Start:', selectedStart.value);
+  console.log('End:', selectedEnd.value);
+  console.log('Mobility:', mobilityType.value);
+  console.log('Graph nodes:', navigationGraph.value.nodes.length);
+  console.log('Graph edges:', navigationGraph.value.edges.length);
+  if (!selectedStart.value || !selectedEnd.value) {
+    console.error('Seleccione origen y destino');
+    return;
   }
-]);
 
-// Métodos
-const changeMobilityType = () => {
-  console.log('Tipo de movilidad:', mobilityType.value);
+  if (selectedStart.value === selectedEnd.value) {
+    console.error('Origen y destino no pueden ser iguales');
+    return;
+  }
+
+  isLoading.value = true;
+  
+  try {
+    // Usar algoritmo A* para encontrar ruta óptima
+    const route = findPathAStar(
+      
+      navigationGraph.value,
+      selectedStart.value,
+      selectedEnd.value,
+      mobilityType.value
+    );
+
+    if (route) {
+      calculatedRoute.value = route;
+      showRouteDetails.value = true;
+      console.log('Ruta calculada:', route);
+    } else {
+      console.error('No se encontró ruta entre los puntos seleccionados');
+      calculatedRoute.value = null;
+    }
+  } catch (error) {
+    console.error('Error calculando ruta:', error);
+    calculatedRoute.value = null;
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-const getPoiIcon = (type: string) => {
-  const icons: Record<string, any> = {
-    academic: schoolOutline,
-    library: libraryOutline,
-    sports: carOutline,
-    food: restaurantOutline,
-    medical: medkitOutline,
-    event: businessOutline
-  };
-  return icons[type] || schoolOutline;
+const startNavigation = () => {
+  if (calculatedRoute.value) {
+       // ============ DEBUG ============
+    console.log("🔍 [DEBUG MapPage] startNavigation");
+    console.log("📍 selectedStart:", selectedStart.value);
+    console.log("📍 selectedEnd:", selectedEnd.value);
+    console.log("🚗 mobilityType:", mobilityType.value);
+    console.log("🗺️ Ruta calculada:", calculatedRoute.value);
+    // ============ FIN DEBUG ============
+    // Encontrar nombres de los nodos para mostrar en la navegación
+    const fromNode = navigationGraph.value.nodes.find(n => n.id === selectedStart.value);
+    const toNode = navigationGraph.value.nodes.find(n => n.id === selectedEnd.value);
+    
+    // Pasar la ruta completa como parámetro
+    router.push({
+      path: "/app/navigation/route",
+      query: {
+        from: selectedStart.value,
+        to: selectedEnd.value,
+        mobility: mobilityType.value,
+        routeData: JSON.stringify(calculatedRoute.value),
+        fromName: fromNode?.name || selectedStart.value,
+        toName: toNode?.name || selectedEnd.value
+      }
+    });
+  }
 };
 
-const selectPOI = (poi: any) => {
-  selectedPOI.value = poi;
+const handleMobilityChange = (newMobility: 'walking' | 'wheelchair' | 'car') => {
+  mobilityType.value = newMobility;
+  
+  // Recalcular ruta si ya existe una
+  if (calculatedRoute.value) {
+    calculateRoute();
+  }
 };
 
-const navigateTo = (poi: any) => {
-  router.push(`/navigation?to=${poi.id}&type=${mobilityType.value}`);
+const getBuildingInfo = (buildingId: string | null) => {
+  if (!buildingId) return null;
+  return campusBuildings.value.find(b => b.id === buildingId);
 };
 
-const goToBuildingDetail = (id: number) => {
-  router.push(`/building-detail/${id}`);
+const clearRoute = () => {
+  calculatedRoute.value = null;
+  showRouteDetails.value = false;
 };
 
-const findNearestRestroom = () => {
-  console.log('Buscando baño más cercano...');
+// ======================
+// FUNCIONES AUXILIARES
+// ======================
+const getNodeIdFromBuilding = (buildingId: string): string => {
+  // Buscar nodo correspondiente al edificio
+  const node = navigationGraph.value.nodes.find(n => n.buildingId === buildingId);
+  return node ? node.id : 'nodo-biblioteca'; // fallback a biblioteca
 };
 
-const findParking = () => {
-  console.log('Buscando estacionamiento...');
-};
-
-const showRoutePlanner = () => {
-  router.push('/route-planner');
-};
-
-const centerOnUser = () => {
-  console.log('Centrando en usuario...');
-};
-
-const toggleSatellite = () => {
-  console.log('Alternando vista satélite...');
-};
+// ======================
+// CICLO DE VIDA
+// ======================
+onMounted(() => {
+  console.log('Datos del campus cargados:', campusBuildings.value.length, 'edificios');
+  console.log('Grafo de navegación:', navigationGraph.value.nodes.length, 'nodos');
+  
+  // Calcular ruta por defecto al cargar
+  setTimeout(() => {
+    calculateRoute();
+  }, 500);
+});
 </script>
 
 <style scoped>
@@ -373,5 +951,32 @@ const toggleSatellite = () => {
 
 .quick-actions ion-button {
   flex: 1;
+}
+.map-overlay {
+  position: relative; /* Cambia de absolute a relative */
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 16px;
+  border-radius: 8px;
+  z-index: 10; /* Reduce z-index */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 16px 0; /* Espaciado vertical */
+}
+
+.overlay-content h3 {
+  margin-top: 0;
+  color: var(--ion-color-primary);
+}
+
+.overlay-content p {
+  margin: 8px 0;
+  color: var(--ion-color-medium);
+}
+
+.map-section {
+  position: relative;
+  margin-bottom: 20px;
 }
 </style>

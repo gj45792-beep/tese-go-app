@@ -1,0 +1,82 @@
+{
+  "events": [
+    {
+      "id": "conf-ia-2024",
+      "title": "Conferencia: Inteligencia Artificial en la Educacion",
+      "type": "conferencia",
+      "date": "2024-01-15",
+      "time": "10:00",
+      "duration": "2 horas",
+      "location": "Auditorio Principal",
+      "buildingId": "auditorio-principal",
+      "speakers": [
+        {
+          "name": "Dra. Maria Gonzalez",
+          "title": "Directora de Innovacion Educativa",
+          "bio": "Especialista en IA aplicada a la educacion con 15 anos de experiencia.",
+          "image": null
+        },
+        {
+          "name": "Dr. Carlos Ruiz",
+          "title": "Investigador en Machine Learning",
+          "bio": "PhD en Ciencias de la Computacion con multiples publicaciones en IEEE.",
+          "image": null
+        }
+      ],
+      "description": "Conferencia sobre las ultimas tendencias en IA aplicada a modelos educativos.",
+      "capacity": 200,
+      "registered": 150,
+      "tags": ["IA", "Educacion", "Tecnologia"]
+    },
+    {
+      "id": "taller-emprendimiento",
+      "title": "Taller: Emprendimiento Tecnologico",
+      "type": "taller",
+      "date": "2024-01-16",
+      "time": "14:00",
+      "duration": "3 horas",
+      "location": "Edificio de Aulas A - Sala 301",
+      "buildingId": "edificio-aulas-a",
+      "speakers": [
+        {
+          "name": "Lic. Andrea Martinez",
+          "title": "Fundadora de Startup Tech",
+          "bio": "Emprendedora con 3 startups exitosas en el sector tecnologico.",
+          "image": null
+        }
+      ],
+      "description": "Taller practico para desarrollar ideas de negocio en el sector tecnologico.",
+      "capacity": 50,
+      "registered": 35,
+      "tags": ["Emprendimiento", "Startup", "Negocios"]
+    },
+    {
+      "id": "ceremonia-titulacion",
+      "title": "Ceremonia de Titulacion Generacion 2023-2",
+      "type": "ceremonia",
+      "date": "2024-01-20",
+      "time": "17:00",
+      "duration": "4 horas",
+      "location": "Auditorio Principal",
+      "buildingId": "auditorio-principal",
+      "speakers": [
+        {
+          "name": "Mtro. Jorge Hernandez",
+          "title": "Rector del TESE",
+          "bio": "Rector de la institucion con mas de 20 anos en educacion superior.",
+          "image": null
+        },
+        {
+          "name": "Dra. Laura Sanchez",
+          "title": "Directora Academica",
+          "bio": "Encargada de los programas academicos y procesos de titulacion.",
+          "image": null
+        }
+      ],
+      "description": "Ceremonia oficial de titulacion para la generacion 2023-2.",
+      "capacity": 500,
+      "registered": 300,
+      "tags": ["Titulacion", "Graduacion", "Ceremonia"]
+    }
+  ]
+}
