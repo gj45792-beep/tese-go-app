@@ -79,6 +79,16 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Settings',
         component: () => import('@/views/profile/SettingsPage.vue'),
       },
+      {
+      path: 'event-schedule',
+      name: 'EventSchedule',
+      component: () => import('@/views/events/EventSchedulePage.vue'),
+      },
+      {
+      path: 'live-navigation',
+      name: 'LiveNavigation',
+      component: () => import('@/views/navigation/LiveNavigationPage.vue'),
+      },
     ],
   },
   {
