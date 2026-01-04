@@ -1,0 +1,76 @@
+﻿[assets]
+[components]
+[data]
+[layouts]
+[router]
+[services]
+[stores]
+[theme]
+[utils]
+[views]
+├── App.vue
+├── main.ts
+├── vite-env.d.ts
+[images]
+[styles]
+│   │   ├── campus-map.jpg
+│   │   ├── logo-tese.jpg
+│   │   ├── global.css
+[auth]
+[campus]
+[common]
+[events]
+[navigation]
+[protocols]
+│   │   ├── SocialLoginButtons.vue
+│   │   ├── BuildingCard.vue
+│   │   ├── MobilitySelector.vue
+│   │   ├── Footer.vue
+│   │   ├── Header.vue
+│   │   ├── index.ts
+│   │   ├── EventCard.vue
+│   │   ├── EventDetail.vue
+│   │   ├── NavigationSteps.vue
+│   │   ├── RouteMap.vue
+│   │   ├── ProtocolDetail.vue
+│   ├── campus-buildings.json
+│   ├── events-data.json
+│   ├── graph-nodes.json
+│   ├── AuthLayout.vue
+│   ├── MainLayout.vue
+│   ├── PublicLayout.vue
+│   ├── index.ts
+│   ├── routes.ts
+[auth]
+│   │   ├── auth.service.ts
+│   │   ├── firebase-simple.config.ts
+│   │   ├── firebase.config.ts
+│   ├── auth-simple.store.ts
+│   ├── index.ts
+│   ├── variables.css
+[algorithms]
+[helpers]
+│   │   ├── a-star.ts
+[auth]
+[events]
+[navigation]
+[profile]
+[protocols]
+[public]
+│   │   ├── HomePage.vue
+│   │   ├── EventDetailPage.vue
+│   │   ├── EventMapPage.vue
+│   │   ├── EventSchedulePage.vue
+│   │   ├── EventsListPage.vue
+│   │   ├── PonentesPage.vue
+│   │   ├── BuildingDetailPage.vue
+│   │   ├── LiveNavigationPage.vue
+│   │   ├── MapPage.vue
+│   │   ├── NavigationRoutePage.vue
+│   │   ├── ProfilePage.vue
+│   │   ├── SettingsPage.vue
+│   │   ├── ProtocolsPage.vue
+│   │   ├── ForgotPasswordPage.vue
+│   │   ├── LoginPage.vue
+│   │   ├── RegisterPage.vue
+│   │   ├── WelcomePage.vue

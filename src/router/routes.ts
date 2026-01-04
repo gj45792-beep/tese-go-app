@@ -101,6 +101,16 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Protocols',
         component: () => import('@/views/protocols/ProtocolsPage.vue'),
       },
+      {
+        path: 'emergency',
+        name: 'Emergency',
+        component: () => import('@/views/emergency/EmergencyPage.vue'),
+      },
+      {
+        path: 'parking',
+        name: 'Parking',
+        component: () => import('@/views/parking/ParkingPage.vue'),
+      },
     ],
   },
   {
@@ -135,6 +145,14 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/protocols',
     redirect: '/app/protocols',
+  },
+  {
+    path: '/emergency',
+    redirect: '/app/emergency',
+  },
+    {
+    path: '/parking',
+    redirect: '/app/parking',
   },
   {
     path: '/:pathMatch(.*)*',

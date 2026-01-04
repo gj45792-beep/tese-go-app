@@ -1,118 +1,810 @@
 {
   "nodes": [
     {
-      "id": "entrada-principal",
-      "name": "Entrada Principal",
-      "coordinates": { "lat": 19.441500, "lng": -99.204500 },
+      "id": "puerta-1",
+      "name": "Puerta 1 Principal",
+      "coordinates": { "lat": 19.511114, "lng": -99.038302 },
       "type": "entrance",
-      "buildingId": null
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Entrada principal para peatones, autos y personas con discapacidad"
     },
     {
-      "id": "nodo-auditorio",
-      "name": "Frente Auditorio",
-      "coordinates": { "lat": 19.441712, "lng": -99.203512 },
+      "id": "puerta-2",
+      "name": "Puerta 2",
+      "coordinates": { "lat": 19.509296, "lng": -99.039491 },
+      "type": "entrance",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Entrada peatonal"
+    },
+    {
+      "id": "puerta-3",
+      "name": "Puerta 3",
+      "coordinates": { "lat": 19.510059, "lng": -99.041237 },
+      "type": "entrance",
+      "buildingId": null,
+      "accessible": false,
+      "floor": 0,
+      "description": "Entrada para personal administrativo"
+    },
+    {
+      "id": "puerta-4",
+      "name": "Puerta 4",
+      "coordinates": { "lat": 19.510561, "lng": -99.042803 },
+      "type": "entrance",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Entrada para peatones, autos y personas con discapacidad"
+    },
+    {
+      "id": "puerta-5",
+      "name": "Puerta 5",
+      "coordinates": { "lat": 19.510913, "lng": -99.043651 },
+      "type": "entrance",
+      "buildingId": null,
+      "accessible": false,
+      "floor": 0,
+      "description": "Entrada para vehículos"
+    },
+    {
+      "id": "estacionamiento-1",
+      "name": "Estacionamiento 1",
+      "coordinates": { "lat": 19.512990, "lng": -99.042235 },
+      "type": "parking",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Estacionamiento general"
+    },
+    {
+      "id": "estacionamiento-2",
+      "name": "Estacionamiento 2",
+      "coordinates": { "lat": 19.512213, "lng": -99.041030 },
+      "type": "parking",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Estacionamiento general"
+    },
+    {
+      "id": "estacionamiento-3",
+      "name": "Estacionamiento 3",
+      "coordinates": { "lat": 19.510861, "lng": -99.038551 },
+      "type": "parking",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Estacionamiento general"
+    },
+    {
+      "id": "estacionamiento-4",
+      "name": "Estacionamiento 4",
+      "coordinates": { "lat": 19.510777, "lng": -99.042458 },
+      "type": "parking",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Estacionamiento general"
+    },
+    {
+      "id": "estacionamiento-5",
+      "name": "Estacionamiento 5",
+      "coordinates": { "lat": 19.510480, "lng": -99.041913 },
+      "type": "parking",
+      "buildingId": null,
+      "accessible": false,
+      "floor": 0,
+      "description": "Estacionamiento para docentes y administrativos"
+    },
+    {
+      "id": "division-informatica",
+      "name": "División Ingeniería en Informática",
+      "coordinates": { "lat": 19.512818, "lng": -99.042925 },
       "type": "building",
-      "buildingId": "auditorio-principal"
+      "buildingId": "DII",
+      "accessible": true,
+      "floor": 0,
+      "description": "División de Ingeniería en Informática"
     },
     {
-      "id": "nodo-biblioteca",
-      "name": "Entrada Biblioteca",
-      "coordinates": { "lat": 19.442130, "lng": -99.203812 },
+      "id": "division-sistemas",
+      "name": "División Sistemas Computacionales",
+      "coordinates": { "lat": 19.512747, "lng": -99.042298 },
       "type": "building",
-      "buildingId": "biblioteca-central"
+      "buildingId": "DSC",
+      "accessible": true,
+      "floor": 0,
+      "description": "División de Ingeniería en Sistemas Computacionales"
     },
     {
-      "id": "nodo-rectoria",
-      "name": "Entrada Rectoría",
-      "coordinates": { "lat": 19.441877, "lng": -99.204074 },
+      "id": "ccai",
+      "name": "CCAI",
+      "coordinates": { "lat": 19.512485, "lng": -99.042786 },
       "type": "building",
-      "buildingId": "rectoria"
+      "buildingId": "CCAI",
+      "accessible": true,
+      "floor": 0,
+      "description": "Centro de Cómputo e Inteligencia Artificial"
     },
     {
-      "id": "nodo-laboratorios",
-      "name": "Entrada Laboratorios",
-      "coordinates": { "lat": 19.442521, "lng": -99.204312 },
+      "id": "division-aeronautica",
+      "name": "División Ingeniería Aeronáutica",
+      "coordinates": { "lat": 19.512764, "lng": -99.043305 },
       "type": "building",
-      "buildingId": "laboratorios-ingenieria"
+      "buildingId": "DIA",
+      "accessible": true,
+      "floor": 0,
+      "description": "División de Ingeniería Aeronáutica"
     },
     {
-      "id": "nodo-cafeteria",
-      "name": "Entrada Cafetería",
-      "coordinates": { "lat": 19.442000, "lng": -99.204500 },
+      "id": "division-gestion",
+      "name": "División Gestión Empresarial",
+      "coordinates": { "lat": 19.512350, "lng": -99.043718 },
       "type": "building",
-      "buildingId": "cafeteria"
+      "buildingId": "DGE",
+      "accessible": true,
+      "floor": 0,
+      "description": "División de Gestión Empresarial"
     },
     {
-      "id": "nodo-aulas-a",
-      "name": "Entrada Aulas A",
-      "coordinates": { "lat": 19.441950, "lng": -99.203950 },
+      "id": "edificio-u",
+      "name": "Edificio U",
+      "coordinates": { "lat": 19.511905, "lng": -99.043005 },
       "type": "building",
-      "buildingId": "edificio-aulas-a"
+      "buildingId": "U",
+      "accessible": true,
+      "floor": 0,
+      "description": "Edificio U"
     },
     {
-      "id": "nodo-interseccion-1",
+      "id": "edificio-t",
+      "name": "Edificio T",
+      "coordinates": { "lat": 19.511546, "lng": -99.043026 },
+      "type": "building",
+      "buildingId": "T",
+      "accessible": true,
+      "floor": 0,
+      "description": "Edificio T"
+    },
+    {
+      "id": "centro-idiomas",
+      "name": "Centro de Idiomas",
+      "coordinates": { "lat": 19.511025, "lng": -99.042903 },
+      "type": "building",
+      "buildingId": "CI",
+      "accessible": true,
+      "floor": 0,
+      "description": "Centro de Idiomas"
+    },
+    {
+      "id": "division-industrial",
+      "name": "División Industrial y Mecánica",
+      "coordinates": { "lat": 19.512200, "lng": -99.042300 },
+      "type": "building",
+      "buildingId": "DIM",
+      "accessible": true,
+      "floor": 0,
+      "description": "División de Ingeniería Industrial y Mecánica"
+    },
+    {
+      "id": "auditorio",
+      "name": "Auditorio de Usos Múltiples",
+      "coordinates": { "lat": 19.512129, "lng": -99.041716 },
+      "type": "building",
+      "buildingId": "AUD",
+      "accessible": true,
+      "floor": 0,
+      "description": "Auditorio principal del TESE"
+    },
+    {
+      "id": "actividades-culturales",
+      "name": "Actividades Culturales",
+      "coordinates": { "lat": 19.511719, "lng": -99.041420 },
+      "type": "building",
+      "buildingId": "AC",
+      "accessible": true,
+      "floor": 0,
+      "description": "Área de actividades culturales"
+    },
+    {
+      "id": "biblioteca",
+      "name": "Biblioteca",
+      "coordinates": { "lat": 19.510894, "lng": -99.041835 },
+      "type": "building",
+      "buildingId": "BIB",
+      "accessible": true,
+      "floor": 0,
+      "description": "Biblioteca central"
+    },
+    {
+      "id": "sindicato",
+      "name": "Sindicato SUTATESE",
+      "coordinates": { "lat": 19.511273, "lng": -99.041889 },
+      "type": "building",
+      "buildingId": "SIND",
+      "accessible": true,
+      "floor": 0,
+      "description": "Sindicato de trabajadores"
+    },
+    {
+      "id": "edificio-gobierno",
+      "name": "Edificio de Gobierno",
+      "coordinates": { "lat": 19.510527, "lng": -99.041253 },
+      "type": "building",
+      "buildingId": "GOV",
+      "accessible": true,
+      "floor": 0,
+      "description": "Edificio administrativo de gobierno"
+    },
+    {
+      "id": "canchas-futbol",
+      "name": "Canchas de Fútbol",
+      "coordinates": { "lat": 19.511966, "lng": -99.040515 },
+      "type": "sport",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Canchas de fútbol"
+    },
+    {
+      "id": "canchas-basket",
+      "name": "Canchas de Basketball",
+      "coordinates": { "lat": 19.511007, "lng": -99.040555 },
+      "type": "sport",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Canchas de basketball"
+    },
+    {
+      "id": "centro-computo",
+      "name": "Centro de Cómputo",
+      "coordinates": { "lat": 19.511882, "lng": -99.039909 },
+      "type": "building",
+      "buildingId": "CC",
+      "accessible": true,
+      "floor": 0,
+      "description": "Centro de cómputo"
+    },
+    {
+      "id": "division-electronica",
+      "name": "División Ingeniería Electrónica",
+      "coordinates": { "lat": 19.511354, "lng": -99.040014 },
+      "type": "building",
+      "buildingId": "DIE",
+      "accessible": true,
+      "floor": 0,
+      "description": "División de Ingeniería Electrónica"
+    },
+    {
+      "id": "vinculacion",
+      "name": "Vinculación y Extensión",
+      "coordinates": { "lat": 19.510431, "lng": -99.040218 },
+      "type": "building",
+      "buildingId": "VE",
+      "accessible": true,
+      "floor": 0,
+      "description": "Vinculación y extensión universitaria"
+    },
+    {
+      "id": "division-quimica",
+      "name": "División Ingeniería Química",
+      "coordinates": { "lat": 19.509999, "lng": -99.039783 },
+      "type": "building",
+      "buildingId": "DIQ",
+      "accessible": true,
+      "floor": 0,
+      "description": "División de Ingeniería Química y Bioquímica"
+    },
+    {
+      "id": "aula-sor-juana",
+      "name": "Aula Sor Juana",
+      "coordinates": { "lat": 19.510148, "lng": -99.039504 },
+      "type": "building",
+      "buildingId": "ASJ",
+      "accessible": true,
+      "floor": 0,
+      "description": "Aula Sor Juana Inés de la Cruz"
+    },
+    {
+      "id": "servicios-escolares",
+      "name": "Servicios Escolares",
+      "coordinates": { "lat": 19.510125, "lng": -99.039292 },
+      "type": "building",
+      "buildingId": "SE",
+      "accessible": true,
+      "floor": 0,
+      "description": "Ventanilla de servicios escolares"
+    },
+    {
+      "id": "caja-pagos",
+      "name": "Caja de Pagos",
+      "coordinates": { "lat": 19.510353, "lng": -99.039273 },
+      "type": "building",
+      "buildingId": "CP",
+      "accessible": true,
+      "floor": 0,
+      "description": "Caja de pagos del TESE"
+    },
+    {
+      "id": "edificio-b",
+      "name": "Edificio B",
+      "coordinates": { "lat": 19.510720, "lng": -99.039619 },
+      "type": "building",
+      "buildingId": "B",
+      "accessible": true,
+      "floor": 0,
+      "description": "Edificio B"
+    },
+    {
+      "id": "cafeteria",
+      "name": "Cafetería TESE",
+      "coordinates": { "lat": 19.510669, "lng": -99.039112 },
+      "type": "service",
+      "buildingId": "CAF",
+      "accessible": true,
+      "floor": 0,
+      "description": "Cafetería principal"
+    },
+    {
+      "id": "hangar",
+      "name": "Hangar y Laboratorios Aeronáutica",
+      "coordinates": { "lat": 19.511551, "lng": -99.039327 },
+      "type": "building",
+      "buildingId": "HANG",
+      "accessible": true,
+      "floor": 0,
+      "description": "Hangar y laboratorios de ingeniería aeronáutica"
+    },
+    {
+      "id": "interseccion-1",
       "name": "Intersección Central",
-      "coordinates": { "lat": 19.442000, "lng": -99.204000 },
+      "coordinates": { "lat": 19.511500, "lng": -99.041000 },
       "type": "intersection",
-      "buildingId": null
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Intersección principal del campus"
+    },
+    {
+      "id": "interseccion-2",
+      "name": "Intersección Norte",
+      "coordinates": { "lat": 19.512400, "lng": -99.042000 },
+      "type": "intersection",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Intersección zona norte"
+    },
+    {
+      "id": "interseccion-3",
+      "name": "Intersección Sur",
+      "coordinates": { "lat": 19.510600, "lng": -99.040500 },
+      "type": "intersection",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Intersección zona sur"
+    },
+    {
+      "id": "interseccion-4",
+      "name": "Intersección Este",
+      "coordinates": { "lat": 19.511000, "lng": -99.043000 },
+      "type": "intersection",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Intersección zona este"
+    },
+    {
+      "id": "rampa-1",
+      "name": "Rampa Accesibilidad Norte",
+      "coordinates": { "lat": 19.512100, "lng": -99.041800 },
+      "type": "ramp",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Rampa para accesibilidad"
+    },
+    {
+      "id": "rampa-2",
+      "name": "Rampa Accesibilidad Sur",
+      "coordinates": { "lat": 19.510900, "lng": -99.040100 },
+      "type": "ramp",
+      "buildingId": null,
+      "accessible": true,
+      "floor": 0,
+      "description": "Rampa para accesibilidad"
     }
   ],
   "edges": [
     {
-      "from": "entrada-principal",
-      "to": "nodo-rectoria",
-      "distance": 50,
-      "type": "sidewalk",
-      "baseWeight": 1.0
-    },
-    {
-      "from": "nodo-rectoria",
-      "to": "nodo-interseccion-1",
-      "distance": 40,
-      "type": "sidewalk",
-      "baseWeight": 1.0
-    },
-    {
-      "from": "nodo-interseccion-1",
-      "to": "nodo-aulas-a",
+      "from": "puerta-1",
+      "to": "estacionamiento-3",
       "distance": 30,
       "type": "sidewalk",
-      "baseWeight": 1.0
+      "baseWeight": 1.0,
+      "accessible": true
     },
     {
-      "from": "nodo-interseccion-1",
-      "to": "nodo-auditorio",
-      "distance": 60,
-      "type": "ramp",
-      "baseWeight": 1.0
+      "from": "puerta-1",
+      "to": "centro-computo",
+      "distance": 150,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
     },
     {
-      "from": "nodo-interseccion-1",
-      "to": "nodo-biblioteca",
+      "from": "puerta-2",
+      "to": "division-quimica",
+      "distance": 40,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "puerta-2",
+      "to": "aula-sor-juana",
+      "distance": 20,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "puerta-3",
+      "to": "edificio-gobierno",
+      "distance": 25,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": false
+    },
+    {
+      "from": "puerta-4",
+      "to": "estacionamiento-4",
+      "distance": 35,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "puerta-4",
+      "to": "centro-idiomas",
       "distance": 80,
-      "type": "stairs",
-      "baseWeight": 1.5
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
     },
     {
-      "from": "nodo-biblioteca",
-      "to": "nodo-laboratorios",
-      "distance": 120,
-      "type": "steep",
-      "baseWeight": 2.0
+      "from": "puerta-5",
+      "to": "edificio-t",
+      "distance": 50,
+      "type": "road",
+      "baseWeight": 1.5,
+      "accessible": false
     },
     {
-      "from": "nodo-interseccion-1",
-      "to": "nodo-cafeteria",
+      "from": "estacionamiento-1",
+      "to": "interseccion-2",
+      "distance": 60,
+      "type": "road",
+      "baseWeight": 1.2,
+      "accessible": true
+    },
+    {
+      "from": "estacionamiento-2",
+      "to": "auditorio",
+      "distance": 40,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "estacionamiento-2",
+      "to": "canchas-futbol",
+      "distance": 80,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "estacionamiento-3",
+      "to": "cafeteria",
       "distance": 70,
       "type": "sidewalk",
-      "baseWeight": 1.0
+      "baseWeight": 1.0,
+      "accessible": true
     },
     {
-      "from": "nodo-aulas-a",
-      "to": "nodo-auditorio",
+      "from": "estacionamiento-4",
+      "to": "biblioteca",
       "distance": 50,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "estacionamiento-5",
+      "to": "edificio-gobierno",
+      "distance": 45,
+      "type": "road",
+      "baseWeight": 1.5,
+      "accessible": false
+    },
+    {
+      "from": "division-informatica",
+      "to": "interseccion-2",
+      "distance": 40,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "division-sistemas",
+      "to": "interseccion-2",
+      "distance": 30,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "ccai",
+      "to": "division-informatica",
+      "distance": 35,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "division-aeronautica",
+      "to": "division-gestion",
+      "distance": 50,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "division-gestion",
+      "to": "edificio-u",
+      "distance": 60,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "edificio-u",
+      "to": "edificio-t",
+      "distance": 40,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "edificio-t",
+      "to": "centro-idiomas",
+      "distance": 50,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "centro-idiomas",
+      "to": "interseccion-4",
+      "distance": 30,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "division-industrial",
+      "to": "interseccion-2",
+      "distance": 25,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "auditorio",
+      "to": "interseccion-1",
+      "distance": 60,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "auditorio",
+      "to": "rampa-1",
+      "distance": 20,
       "type": "ramp",
-      "baseWeight": 1.0
+      "baseWeight": 0.8,
+      "accessible": true
+    },
+    {
+      "from": "actividades-culturales",
+      "to": "interseccion-1",
+      "distance": 40,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "biblioteca",
+      "to": "interseccion-1",
+      "distance": 50,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "sindicato",
+      "to": "biblioteca",
+      "distance": 35,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "edificio-gobierno",
+      "to": "interseccion-3",
+      "distance": 60,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "canchas-futbol",
+      "to": "centro-computo",
+      "distance": 100,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "canchas-basket",
+      "to": "interseccion-3",
+      "distance": 40,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "centro-computo",
+      "to": "hangar",
+      "distance": 80,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "division-electronica",
+      "to": "hangar",
+      "distance": 60,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "vinculacion",
+      "to": "interseccion-3",
+      "distance": 50,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "division-quimica",
+      "to": "interseccion-3",
+      "distance": 70,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "aula-sor-juana",
+      "to": "servicios-escolares",
+      "distance": 25,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "servicios-escolares",
+      "to": "caja-pagos",
+      "distance": 20,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "caja-pagos",
+      "to": "edificio-b",
+      "distance": 40,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "edificio-b",
+      "to": "cafeteria",
+      "distance": 60,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "cafeteria",
+      "to": "rampa-2",
+      "distance": 30,
+      "type": "ramp",
+      "baseWeight": 0.8,
+      "accessible": true
+    },
+    {
+      "from": "hangar",
+      "to": "division-electronica",
+      "distance": 60,
+      "type": "sidewalk",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "interseccion-1",
+      "to": "interseccion-2",
+      "distance": 120,
+      "type": "main-path",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "interseccion-1",
+      "to": "interseccion-3",
+      "distance": 100,
+      "type": "main-path",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "interseccion-1",
+      "to": "interseccion-4",
+      "distance": 90,
+      "type": "main-path",
+      "baseWeight": 1.0,
+      "accessible": true
+    },
+    {
+      "from": "interseccion-2",
+      "to": "rampa-1",
+      "distance": 40,
+      "type": "ramp",
+      "baseWeight": 0.8,
+      "accessible": true
+    },
+    {
+      "from": "interseccion-3",
+      "to": "rampa-2",
+      "distance": 35,
+      "type": "ramp",
+      "baseWeight": 0.8,
+      "accessible": true
+    },
+    {
+      "from": "rampa-1",
+      "to": "actividades-culturales",
+      "distance": 30,
+      "type": "ramp",
+      "baseWeight": 0.8,
+      "accessible": true
+    },
+    {
+      "from": "rampa-2",
+      "to": "vinculacion",
+      "distance": 45,
+      "type": "ramp",
+      "baseWeight": 0.8,
+      "accessible": true
     }
   ]
 }
