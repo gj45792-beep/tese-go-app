@@ -60,11 +60,6 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/navigation/MapPage.vue'),
       },
       {
-        path: 'navigation/:from?/:to?',
-        name: 'NavigationRoute',
-        component: () => import('@/views/navigation/NavigationRoutePage.vue'),
-      },
-      {
         path: 'building/:id',
         name: 'BuildingDetail',
         component: () => import('@/views/navigation/BuildingDetailPage.vue'),

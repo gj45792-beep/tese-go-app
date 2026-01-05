@@ -786,8 +786,8 @@ const startNavigation = () => {
     
     // Pasar la ruta completa como parámetro
     router.push({
-      path: "/app/navigation/route",
-      query: {
+        name: 'LiveNavigation',
+        query: {
         from: selectedStart.value,
         to: selectedEnd.value,
         mobility: mobilityType.value,
