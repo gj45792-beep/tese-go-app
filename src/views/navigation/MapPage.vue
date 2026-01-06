@@ -40,6 +40,7 @@
                         {{ option.label }}
                       </ion-select-option>
                     </ion-select>
+                    <ion-note slot="end">{{ startOptions.length }} opciones</ion-note>
                   </ion-item>
                 </ion-col>
                 
@@ -59,6 +60,7 @@
                         {{ option.label }}
                       </ion-select-option>
                     </ion-select>
+                    <ion-note slot="end">{{ endOptions.length }} opciones</ion-note>
                   </ion-item>
                 </ion-col>
               </ion-row>
@@ -266,8 +268,8 @@ const router = useRouter();
 // ESTADO REACTIVO
 // ======================
 const mobilityType = ref<'walking' | 'wheelchair' | 'car'>('walking');
-const selectedStart = ref<string>('entrada-principal');
-const selectedEnd = ref<string>('nodo-biblioteca');
+const selectedStart = ref<string>('puerta-1');
+const selectedEnd = ref<string>('biblioteca');
 const calculatedRoute = ref<PathResult | null>(null);
 const isLoading = ref(false);
 const showRouteDetails = ref(false);
@@ -278,13 +280,24 @@ const showRouteDetails = ref(false);
 const campusBuildings = ref(campusBuildingsData.buildings);
 const navigationGraph = ref<Graph>({
   nodes: graphData.nodes,
-  edges: graphData.edges.map(edge => ({
-    from: edge.from,
-    to: edge.to,
-    distance: edge.distance,
-    type: edge.type as "ramp" | "sidewalk" | "road" | "stairs" | "steep",
-    baseWeight: edge.baseWeight || 1.0
-  }))
+  edges: graphData.edges.flatMap(edge => [
+    // Arista original
+    {
+      from: edge.from,
+      to: edge.to,
+      distance: edge.distance,
+      type: edge.type as "ramp" | "sidewalk" | "road" | "stairs" | "steep" | "main-path",
+      baseWeight: edge.baseWeight || 1.0
+    },
+    // Arista inversa (grafo no dirigido)
+    {
+      from: edge.to,
+      to: edge.from,
+      distance: edge.distance,
+      type: edge.type as "ramp" | "sidewalk" | "road" | "stairs" | "steep" | "main-path",
+      baseWeight: edge.baseWeight || 1.0
+    }
+  ])
 });
 
 // ======================
@@ -314,12 +327,59 @@ const endOptions = computed(() => {
 // MÉTODOS
 // ======================
 const calculateRoute = async () => {
-  console.log('=== CALCULANDO RUTA ===');
-  console.log('Start:', selectedStart.value);
-  console.log('End:', selectedEnd.value);
-  console.log('Mobility:', mobilityType.value);
-  console.log('Graph nodes:', navigationGraph.value.nodes.length);
-  console.log('Graph edges:', navigationGraph.value.edges.length);
+  console.log('🚀 CALCULANDO RUTA:', {
+    start: selectedStart.value,
+    end: selectedEnd.value,
+    mobility: mobilityType.value,
+    totalNodos: navigationGraph.value.nodes.length,
+    totalAristas: navigationGraph.value.edges.length
+  });
+  //AQUI
+   // Usar algoritmo A* para encontrar ruta óptima
+console.log('📡 Llamando a findPathAStar...');
+const route = findPathAStar(
+  navigationGraph.value,
+  selectedStart.value,
+  selectedEnd.value,
+  mobilityType.value
+);
+
+console.log('📦 Resultado CRÍTICO de findPathAStar:', {
+  esNull: route === null,
+  esUndefined: route === undefined,
+  tipo: typeof route,
+  valor: route
+});
+
+// AGREGAR ESTA VERIFICACIÓN EXPLÍCITA
+if (route === null || route === undefined) {
+  console.error('⚠️ findPathAStar retornó null/undefined a pesar del éxito en logs');
+  console.log('🔍 Verificando si hay error silencioso en reconstructPath...');
+  calculatedRoute.value = null;
+} else if (route && route.nodes && route.nodes.length > 0) {
+  console.log('🎉 RUTA VÁLIDA RECIBIDA DE findPathAStar');
+  calculatedRoute.value = route;
+  showRouteDetails.value = true;
+  
+  // LOGS DETALLADOS
+  console.log('✅ RUTA CALCULADA CON ÉXITO');
+  console.log('📊 Nodos en ruta:', route.nodes.length);
+  console.log('📊 Pasos en ruta:', route.steps.length);
+  console.log('📊 Distancia total:', route.totalDistance, 'metros');
+  console.log('📍 Ruta completa IDs:', route.path);
+  
+  // Verificar inmediatamente si RouteMap lo verá
+  console.log('🗺️ Estado para RouteMap:', {
+    calculatedRouteExiste: !!calculatedRoute.value,
+    nodes: calculatedRoute.value?.nodes?.length,
+    steps: calculatedRoute.value?.steps?.length
+  });
+} else {
+  console.error('❌ Ruta inválida de findPathAStar:', route);
+  calculatedRoute.value = null;
+}
+
+  //AQUI
   if (!selectedStart.value || !selectedEnd.value) {
     console.error('Seleccione origen y destino');
     return;
@@ -333,28 +393,77 @@ const calculateRoute = async () => {
   isLoading.value = true;
   
   try {
+    // Verificación de nodos en grafo
+    console.log('=== VERIFICANDO NODOS EN GRAFO ===');
+    console.log('¿Existe nodo inicio en grafo?', navigationGraph.value.nodes.some(n => n.id === selectedStart.value));
+    console.log('¿Existe nodo fin en grafo?', navigationGraph.value.nodes.some(n => n.id === selectedEnd.value));
+
     // Usar algoritmo A* para encontrar ruta óptima
+    console.log('📡 Llamando a findPathAStar...');
     const route = findPathAStar(
-      
       navigationGraph.value,
       selectedStart.value,
       selectedEnd.value,
       mobilityType.value
     );
 
+    console.log('📦 Resultado de findPathAStar:', route ? '✅ RUTA ENCONTRADA' : '❌ RUTA NO ENCONTRADA');
+
     if (route) {
       calculatedRoute.value = route;
       showRouteDetails.value = true;
-      console.log('Ruta calculada:', route);
+      
+      // LOGS DETALLADOS DE LA RUTA
+      console.log('🎉 ✅ RUTA CALCULADA CON ÉXITO');
+      console.log('📊 Nodos en ruta:', route.nodes.length);
+      console.log('📊 Pasos en ruta:', route.steps.length);
+      console.log('📊 Distancia total:', route.totalDistance, 'metros');
+      console.log('📍 Primeros 3 nodos:', route.nodes.slice(0, 3).map(n => `${n.name} (${n.id})`));
+      console.log('📍 Últimos 3 nodos:', route.nodes.slice(-3).map(n => `${n.name} (${n.id})`));
+      
+      // Verificar que RouteMap recibirá los datos
+      console.log('🗺️ ¿RouteMap puede mostrar?', {
+        tieneRuta: !!calculatedRoute.value,
+        tieneNodos: calculatedRoute.value?.nodes?.length > 0,
+        tienePasos: calculatedRoute.value?.steps?.length > 0
+      });
+      
+      // Forzar actualización del mapa
+      setTimeout(() => {
+        console.log('🔄 Forzando actualización del mapa...');
+        // Esto activará el watcher de RouteMap
+        calculatedRoute.value = { ...route };
+      }, 100);
     } else {
-      console.error('No se encontró ruta entre los puntos seleccionados');
+      console.error('❌ No se encontró ruta entre los puntos seleccionados');
+      
+      // Debug adicional
+      console.log('🔍 === ANÁLISIS DE CONEXIONES ===');
+      const edgesFromStart = navigationGraph.value.edges.filter(e => 
+        e.from === selectedStart.value || e.to === selectedStart.value
+      );
+      const edgesToEnd = navigationGraph.value.edges.filter(e => 
+        e.from === selectedEnd.value || e.to === selectedEnd.value
+      );
+      console.log('🔗 Aristas conectadas a inicio:', edgesFromStart.length);
+      console.log('🔗 Aristas conectadas a fin:', edgesToEnd.length);
+      console.log('🌐 ¿Hay conexión?', {
+        tieneInicio: edgesFromStart.length > 0,
+        tieneFin: edgesToEnd.length > 0,
+        mismaArista: edgesFromStart.some(e => 
+          e.from === selectedEnd.value || e.to === selectedEnd.value
+        )
+      });
+      
       calculatedRoute.value = null;
     }
   } catch (error) {
-    console.error('Error calculando ruta:', error);
+    console.error('💥 Error calculando ruta:', error);
+    //console.error('Stack trace:', error.stack);
     calculatedRoute.value = null;
   } finally {
     isLoading.value = false;
+    console.log('🏁 Estado final - isLoading:', isLoading.value, 'hasRoute:', !!calculatedRoute.value);
   }
 };
 

@@ -13,7 +13,7 @@ export interface Edge {
   from: string;
   to: string;
   distance: number; // en metros
-  type: 'sidewalk' | 'stairs' | 'ramp' | 'steep' | 'road';
+  type: 'sidewalk' | 'stairs' | 'ramp' | 'steep' | 'road' | 'main-path';
   baseWeight: number;
 }
 
@@ -44,21 +44,24 @@ const MOBILITY_FACTORS = {
     stairs: 1.1,    // Pequeña penalización
     ramp: 1.0,
     steep: 1.3,
-    road: 5.0       // Evita calles (peligroso)
+    road: 5.0,       // Evita calles (peligroso)
+    'main-path': 1.0  // ← AGREGAR
   },
   wheelchair: {
     sidewalk: 1.0,
     stairs: 1000.0, // EVITA COMPLETAMENTE escaleras
     ramp: 1.0,      // Prefiere rampas
     steep: 5.0,     // Evita pendientes pronunciadas
-    road: 3.0
+    road: 3.0,
+    'main-path': 1.0  // ← AGREGAR
   },
   car: {
     sidewalk: 1000.0, // NO PUEDE en aceras
     stairs: 1000.0,
     ramp: 1000.0,
     steep: 1000.0,
-    road: 1.0        // SOLO en caminos/roads
+    road: 1.0,        // SOLO en caminos/roads
+    'main-path': 1000.0  // ← AGREGAR
   }
 };
 
@@ -106,6 +109,11 @@ export function findPathAStar(
   const endNode = graph.nodes.find(n => n.id === endId);
 
   if (!startNode || !endNode) {
+    console.log('=== A* DEBUG ===');
+    console.log('Buscando camino de:', startId, 'a:', endId);
+    console.log('Total edges:', graph.edges.length);
+    console.log('Edges desde puerta-1:', graph.edges.filter(e => e.from === 'puerta-1' || e.to === 'puerta-1').length);
+    console.log('Eddes hacia biblioteca:', graph.edges.filter(e => e.from === 'biblioteca' || e.to === 'biblioteca').length);
     console.error('Nodos de inicio o fin no encontrados');
     return null;
   }
@@ -126,7 +134,12 @@ export function findPathAStar(
   gScore.set(startId, 0);
   fScore.set(startId, heuristic(startNode, endNode));
 
-  while (openSet.size > 0) {
+  let iterationCount = 0;
+  const MAX_ITERATIONS = 1000;
+
+  while (openSet.size > 0 && iterationCount < MAX_ITERATIONS) {
+    iterationCount++;
+    
     // Encontrar nodo con menor fScore
     let currentId = '';
     let lowestFScore = Infinity;
@@ -139,29 +152,38 @@ export function findPathAStar(
       }
     }
 
+    console.log(`📊 A* iteración ${iterationCount}, current: ${currentId}, openSet: ${openSet.size}`);
+
     // Si llegamos al destino
     if (currentId === endId) {
-      return reconstructPath(graph, cameFrom, currentId, gScore);
+      console.log('🎯 ¡Destino alcanzado!');
+      try {
+        const result = reconstructPath(graph, cameFrom, currentId, gScore);
+        console.log('✅ reconstructPath retornó resultado exitosamente');
+        return result;
+      } catch (error) {
+        console.error('💥 ERROR FATAL en reconstructPath:', error);
+        if (error instanceof Error) {
+          console.error('Stack trace:', error.stack);
+        } else {
+          console.error('Error desconocido:', error);
+        }
+        console.error('Detalles:', { currentId, cameFromSize: cameFrom.size });
+        return null;
+      }
     }
 
     openSet.delete(currentId);
     const currentNode = graph.nodes.find(n => n.id === currentId)!;
 
     // Revisar vecinos
-    const neighborEdges = graph.edges.filter(e => e.from === currentId);
+    const neighborEdges = graph.edges.filter(e => e.from === currentId || e.to === currentId);
 
     for (const edge of neighborEdges) {
-      const neighborId = edge.to;
+      const neighborId = edge.from === currentId ? edge.to : edge.from;
       const neighborNode = graph.nodes.find(n => n.id === neighborId);
 
       if (!neighborNode) continue;
-
-          // ========== DEBUG LOGS ==========
-  console.log(`🔍 A* Edge: ${edge.from} → ${edge.to}`);
-  console.log(`   Type: ${edge.type}, Distance: ${edge.distance}m`);
-  console.log(`   Mobility: ${mobility}, Factor: ${MOBILITY_FACTORS[mobility][edge.type]}`);
-  // ================================
-
 
       // Calcular peso considerando movilidad
       const mobilityFactor = MOBILITY_FACTORS[mobility][edge.type];
@@ -180,7 +202,12 @@ export function findPathAStar(
     }
   }
 
-  // No se encontró camino
+  if (iterationCount >= MAX_ITERATIONS) {
+    console.error('❌ A* excedió el límite de iteraciones');
+  } else {
+    console.error('❌ A* no encontró ruta');
+  }
+  
   return null;
 }
 
@@ -193,69 +220,111 @@ function reconstructPath(
   currentId: string,
   gScore: Map<string, number>
 ): PathResult {
-  const path: string[] = [];
-  let currentNodeId: string | undefined = currentId;
+  console.log('🔨 reconstructPath llamado para currentId:', currentId);
+  console.log('cameFrom entries:', Array.from(cameFrom.entries()));
+  
+  try {
+    const path: string[] = [];
+    const visited = new Set<string>(); // Para detectar y evitar ciclos
+    let currentNodeId: string | undefined = currentId;
 
-  // Reconstruir camino hacia atrás
-  while (currentNodeId) {
-    path.unshift(currentNodeId);
-    currentNodeId = cameFrom.get(currentNodeId);
-  }
-
-  // Obtener nodos completos
-  const nodesInPath = path.map(id => graph.nodes.find(n => n.id === id)!);
-
-  // Crear pasos con instrucciones
-  const steps: PathStep[] = [];
-  let cumulativeDistance = 0;
-
-  for (let i = 0; i < path.length; i++) {
-    const nodeId = path[i];
-    const node = nodesInPath[i];
-    
-    let distanceFromPrevious = 0;
-    if (i > 0) {
-      const prevNodeId = path[i - 1];
-      const edge = graph.edges.find(e => 
-        (e.from === prevNodeId && e.to === nodeId) ||
-        (e.from === nodeId && e.to === prevNodeId)
-      );
-      distanceFromPrevious = edge?.distance || 0;
-      cumulativeDistance += distanceFromPrevious;
+    // Reconstruir camino hacia atrás con detección de ciclos
+    while (currentNodeId && !visited.has(currentNodeId)) {
+      visited.add(currentNodeId);
+      path.unshift(currentNodeId);
+      currentNodeId = cameFrom.get(currentNodeId);
     }
 
-    let instructions = '';
-    if (i === 0) {
-      instructions = 'Comience aquí';
-    } else if (i === path.length - 1) {
-      instructions = 'Ha llegado a su destino';
-    } else {
-      const edge = graph.edges.find(e => e.from === path[i - 1] && e.to === nodeId);
-      if (edge) {
-        switch (edge.type) {
-          case 'stairs': instructions = 'Suba las escaleras'; break;
-          case 'ramp': instructions = 'Tome la rampa'; break;
-          case 'steep': instructions = 'Cuidado, pendiente pronunciada'; break;
-          default: instructions = 'Continúe por el camino';
-        }
+    // Si detectamos un ciclo, lo cortamos
+    if (currentNodeId && visited.has(currentNodeId)) {
+      console.log('⚠️ Se detectó un ciclo, cortando en:', currentNodeId);
+      // El ciclo ya está manejado por el while, path contiene el camino sin ciclos
+    }
+
+    console.log('📍 Path reconstruido (sin ciclos):', path);
+    console.log('📍 Longitud del path:', path.length);
+
+    if (path.length === 0) {
+      throw new Error('Path reconstruido está vacío');
+    }
+
+    // Obtener nodos completos
+    const nodesInPath = path.map(id => {
+      const node = graph.nodes.find(n => n.id === id);
+      if (!node) {
+        throw new Error(`Nodo ${id} no encontrado en el grafo`);
       }
+      return node;
+    });
+    
+    console.log('📍 Nodos encontrados en path:', nodesInPath.length);
+    console.log('📍 Primer y último nodo:', {
+      primero: nodesInPath[0]?.name,
+      ultimo: nodesInPath[nodesInPath.length - 1]?.name
+    });
+
+    // Crear pasos con instrucciones
+    const steps: PathStep[] = [];
+    let cumulativeDistance = 0;
+
+    for (let i = 0; i < path.length; i++) {
+      const nodeId = path[i];
+      const node = nodesInPath[i];
+      
+      let distanceFromPrevious = 0;
+      if (i > 0) {
+        const prevNodeId = path[i - 1];
+        const edge = graph.edges.find(e => 
+          (e.from === prevNodeId && e.to === nodeId) ||
+          (e.from === nodeId && e.to === prevNodeId)
+        );
+        distanceFromPrevious = edge?.distance || 0;
+        cumulativeDistance += distanceFromPrevious;
+      }
+
+      let instructions = '';
+      if (i === 0) {
+        instructions = 'Comience aquí';
+      } else if (i === path.length - 1) {
+        instructions = 'Ha llegado a su destino';
+      } else {
+        instructions = 'Continúe por el camino';
+      }
+
+      steps.push({
+        nodeId,
+        nodeName: node.name,
+        distanceFromPrevious,
+        cumulativeDistance,
+        instructions
+      });
     }
 
-    steps.push({
-      nodeId,
-      nodeName: node.name,
-      distanceFromPrevious,
-      cumulativeDistance,
-      instructions
-    });
-  }
+    const result: PathResult = {
+      path,
+      totalDistance: cumulativeDistance,
+      steps,
+      nodes: nodesInPath
+    };
 
-  return {
-    path,
-    totalDistance: cumulativeDistance,
-    steps,
-    nodes: nodesInPath
-  };
+    console.log('✅ reconstructPath completado exitosamente:', {
+      totalDistance: result.totalDistance,
+      steps: result.steps.length,
+      nodes: result.nodes.length,
+      path: result.path
+    });
+
+    return result;
+
+  } catch (error) {
+    console.error('❌ ERROR CRÍTICO en reconstructPath:', error);
+    if (error instanceof Error) {
+      console.error('Stack trace:', error.stack);
+    } else {
+      console.error('Error desconocido:', error);
+    }
+    throw error;
+  }
 }
 
 /**
