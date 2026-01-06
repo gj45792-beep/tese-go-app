@@ -376,6 +376,16 @@ export default {
       }
     ])
 
+    // MAPEO DE UBICACIONES A NODOS DEL GRAFO (agregar esto)
+    const locationToNode = {
+      'Auditorio Principal': 'auditorio',
+      'Edificio B - Aula 201': 'edificio-b',
+      'Laboratorio de TI': 'ccai',
+      'Edificio A - Sala de Juntas': 'edificio-gobierno',
+      'Biblioteca - Sala Digital': 'biblioteca',
+      'default': 'interseccion-1'
+    };   
+
     const days = [
       { id: 'all', label: 'Todos' },
       { id: 'today', label: 'Hoy' },
@@ -485,16 +495,19 @@ export default {
     }
 
     const navigateToEvent = (event) => {
-      // Navegar a LiveNavigationPage con las coordenadas del evento
-      router.push({
-        name: 'LiveNavigation',
-        query: {
-          destination: event.location,
-          destX: event.mapX,
-          destY: event.mapY
-        }
-      })
-    }
+     // Obtener el nodo correspondiente a la ubicación
+     const nodeId = locationToNode[event.location] || locationToNode['default'];
+  
+      // Navegar a LiveNavigationPage con el nodeId
+         router.push({
+         name: 'LiveNavigation',
+         query: {
+         nodeId: nodeId,
+         eventTitle: event.title,
+         eventLocation: event.location
+         }
+         });
+     };
 
     const addToCalendar = (event) => {
       // Lógica para agregar a calendario

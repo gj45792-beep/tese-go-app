@@ -40,6 +40,7 @@
                         {{ option.label }}
                       </ion-select-option>
                     </ion-select>
+                    <ion-note slot="end">{{ startOptions.length }} opciones</ion-note>
                   </ion-item>
                 </ion-col>
                 
@@ -59,6 +60,7 @@
                         {{ option.label }}
                       </ion-select-option>
                     </ion-select>
+                    <ion-note slot="end">{{ endOptions.length }} opciones</ion-note>
                   </ion-item>
                 </ion-col>
               </ion-row>
@@ -257,436 +259,17 @@ import {
   type Node 
 } from '@/utils/algorithms/a-star';
 
-const campusBuildingsData = {
-  buildings: [
-    {
-      "id": "rectoria",
-      "name": "Gobierno TESE",
-      "code": "GOB",
-      "description": "Edificio de gobierno y administración del TESE.",
-      "coordinates": { "lat": 19.510549, "lng": -99.041236 },
-      "floors": 4,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": true,
-        "ramps": true,
-        "accessibleBathrooms": true
-      },
-      "facilities": ["Oficinas administrativas", "Sala de juntas", "Recepción"],
-      "departments": ["Rectoría", "Administración", "Dirección Académica"],
-      "image": null
-    },
-    {
-      "id": "biblioteca-central",
-      "name": "Biblioteca TESE",
-      "code": "BIB",
-      "description": "Biblioteca con más de 50,000 volúmenes, sala de cómputo y áreas de estudio.",
-      "coordinates": { "lat": 19.510908, "lng": -99.041829 },
-      "floors": 3,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": true,
-        "ramps": true,
-        "accessibleBathrooms": true
-      },
-      "facilities": ["Sala de lectura", "Computadoras", "Préstamo a domicilio", "Sala silenciosa"],
-      "departments": ["Biblioteca", "Centro de cómputo"],
-      "image": null
-    },
-    {
-      "id": "laboratorios-ingenieria",
-      "name": "División de Ingeniería Electrónica",
-      "code": "DIE",
-      "description": "Laboratorios especializados para prácticas de ingeniería electrónica.",
-      "coordinates": { "lat": 19.511355, "lng": -99.040007 },
-      "floors": 2,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": false,
-        "ramps": true,
-        "accessibleBathrooms": false
-      },
-      "facilities": ["Laboratorio de cómputo", "Taller electrónico", "Sala de prototipos", "Laboratorio de circuitos"],
-      "departments": ["Ingeniería Electrónica"],
-      "image": null
-    },
-    {
-      "id": "auditorio-principal",
-      "name": "Auditorio de Usos Múltiples TESE",
-      "code": "AUD",
-      "description": "Auditorio con capacidad para 500 personas, equipado para conferencias y ceremonias.",
-      "coordinates": { "lat": 19.512159, "lng": -99.041705 },
-      "floors": 1,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": false,
-        "ramps": true,
-        "accessibleBathrooms": true
-      },
-      "facilities": ["Proyectores HD", "Sistema de sonido", "Camerinos"],
-      "departments": ["Eventos Especiales", "Extensión Universitaria"],
-      "image": null
-    },
-    {
-      "id": "cafeteria",
-      "name": "Cafetería TESE",
-      "code": "CAF",
-      "description": "Área de alimentos y bebidas para estudiantes y personal.",
-      "coordinates": { "lat": 19.510549, "lng": -99.039106 },
-      "floors": 1,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": false,
-        "ramps": true,
-        "accessibleBathrooms": true
-      },
-      "facilities": ["Comedor", "Cafetería", "Área de descanso", "Microondas"],
-      "departments": ["Servicios Estudiantiles"],
-      "image": null
-    },
-    {
-      "id": "edificio-aulas-a",
-      "name": "División Contaduría",
-      "code": "DCO",
-      "description": "Edificio con aulas para la división de contaduría y administración.",
-      "coordinates": { "lat": 19.511274, "lng": -99.042411 },
-      "floors": 3,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": true,
-        "ramps": true,
-        "accessibleBathrooms": true
-      },
-      "facilities": ["Aulas equipadas", "Pizarrones inteligentes", "Proyectores", "Sala de profesores"],
-      "departments": ["Contaduría", "Administración"],
-      "image": null
-    },
-    // EDIFICIOS ADICIONALES
-    {
-      "id": "informatica",
-      "name": "División en Ingeniería en Informática",
-      "code": "DII",
-      "description": "División especializada en ingeniería en informática y tecnologías de la información.",
-      "coordinates": { "lat": 19.512827, "lng": -99.042910 },
-      "floors": 3,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": true,
-        "ramps": true,
-        "accessibleBathrooms": true
-      },
-      "facilities": ["Laboratorios de cómputo", "Aulas especializadas", "Sala de servidores"],
-      "departments": ["Ingeniería en Informática"],
-      "image": null
-    },
-    {
-      "id": "sistemas",
-      "name": "División Ingeniería en Sistemas Computacionales",
-      "code": "DSC",
-      "description": "División dedicada a la ingeniería en sistemas computacionales y desarrollo de software.",
-      "coordinates": { "lat": 19.512751, "lng": -99.042271 },
-      "floors": 3,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": true,
-        "ramps": true,
-        "accessibleBathrooms": true
-      },
-      "facilities": ["Laboratorios de redes", "Aulas de programación", "Sala de proyectos"],
-      "departments": ["Ingeniería en Sistemas Computacionales"],
-      "image": null
-    },
-    {
-      "id": "industrial",
-      "name": "División de Ingeniería Industrial y Mecánica",
-      "code": "DIM",
-      "description": "División para ingeniería industrial, mecánica y de procesos.",
-      "coordinates": { "lat": 19.512200, "lng": -99.042274 },
-      "floors": 2,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": false,
-        "ramps": true,
-        "accessibleBathrooms": true
-      },
-      "facilities": ["Taller mecánico", "Laboratorio de procesos", "Sala de diseño"],
-      "departments": ["Ingeniería Industrial", "Ingeniería Mecánica"],
-      "image": null
-    },
-    {
-      "id": "quimica",
-      "name": "División de Ingeniería Química y Bioquímica",
-      "code": "DQB",
-      "description": "División especializada en ingeniería química y bioquímica.",
-      "coordinates": { "lat": 19.509979, "lng": -99.039685 },
-      "floors": 3,
-      "accessibility": {
-        "wheelchair": true,
-        "elevator": true,
-        "ramps": true,
-        "accessibleBathrooms": true
-      },
-      "facilities": ["Laboratorios químicos", "Sala de bioseguridad", "Planta piloto"],
-      "departments": ["Ingeniería Química", "Ingeniería Bioquímica"],
-      "image": null
-    }
-  ]
-};
-const graphData = {
-  nodes: [
-  // ENTRADAS
-  {
-    "id": "entrada-principal",
-    "name": "Entrada Principal TESE",
-    "coordinates": { "lat": 19.510320, "lng": -99.042213 },
-    "type": "entrance",
-    "buildingId": null
-  },
-  {
-    "id": "entrada-vehicular",
-    "name": "Entrada Vehicular",
-    "coordinates": { "lat": 19.511500, "lng": -99.040800 },
-    "type": "entrance",
-    "buildingId": null
-  },
-  // EDIFICIOS PRINCIPALES
-  {
-    "id": "nodo-biblioteca",
-    "name": "Biblioteca TESE",
-    "coordinates": { "lat": 19.510908, "lng": -99.041829 },
-    "type": "building",
-    "buildingId": "biblioteca-central"
-  },
-  {
-    "id": "nodo-rectoria",
-    "name": "Gobierno TESE",
-    "coordinates": { "lat": 19.510549, "lng": -99.041236 },
-    "type": "building",
-    "buildingId": "rectoria"
-  },
-  {
-    "id": "nodo-auditorio",
-    "name": "Auditorio de Usos Múltiples",
-    "coordinates": { "lat": 19.512159, "lng": -99.041705 },
-    "type": "building",
-    "buildingId": "auditorio-principal"
-  },
-  {
-    "id": "nodo-cafeteria",
-    "name": "Cafetería TESE",
-    "coordinates": { "lat": 19.510549, "lng": -99.039106 },
-    "type": "building",
-    "buildingId": "cafeteria"
-  },
-  {
-    "id": "nodo-laboratorios",
-    "name": "División de Ingeniería Electrónica",
-    "coordinates": { "lat": 19.511355, "lng": -99.040007 },
-    "type": "building",
-    "buildingId": "laboratorios-ingenieria"
-  },
-  {
-    "id": "nodo-aulas-a",
-    "name": "División Contaduría",
-    "coordinates": { "lat": 19.511274, "lng": -99.042411 },
-    "type": "building",
-    "buildingId": "edificio-aulas-a"
-  },
-  {
-    "id": "nodo-informatica",
-    "name": "División en Ingeniería en Informática",
-    "coordinates": { "lat": 19.512827, "lng": -99.042910 },
-    "type": "building",
-    "buildingId": "informatica"
-  },
-  {
-    "id": "nodo-aeronautica",
-    "name": "Edificio W Ingeniería Aeronáutica",
-    "coordinates": { "lat": 19.512718, "lng": -99.043492 },
-    "type": "building",
-    "buildingId": "aeronautica"
-  },
-  {
-    "id": "nodo-sistemas",
-    "name": "División Ingeniería en Sistemas Computacionales",
-    "coordinates": { "lat": 19.512751, "lng": -99.042271 },
-    "type": "building",
-    "buildingId": "sistemas"
-  },
-  {
-    "id": "nodo-industrial",
-    "name": "División de Ingeniería Industrial y Mecánica",
-    "coordinates": { "lat": 19.512200, "lng": -99.042274 },
-    "type": "building",
-    "buildingId": "industrial"
-  },
-  {
-    "id": "nodo-quimica",
-    "name": "División de Ingeniería Química y Bioquímica",
-    "coordinates": { "lat": 19.509979, "lng": -99.039685 },
-    "type": "building",
-    "buildingId": "quimica"
-  },
-  // PUNTOS DE INTERÉS
-  {
-    "id": "nodo-interseccion-1",
-    "name": "Intersección Central",
-    "coordinates": { "lat": 19.511500, "lng": -99.042000 },
-    "type": "intersection",
-    "buildingId": null
-  },
-  {
-    "id": "nodo-estacionamiento",
-    "name": "Estacionamiento Principal",
-    "coordinates": { "lat": 19.511992, "lng": -99.040528 },
-    "type": "parking",
-    "buildingId": null
-  }
-],
-  edges: [
-  // CONEXIONES DESDE ENTRADA PRINCIPAL
-  {
-    "from": "entrada-principal",
-    "to": "nodo-rectoria",           // Gobierno TESE
-    "distance": 80,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "entrada-principal",
-    "to": "nodo-interseccion-1",     // Intersección Central
-    "distance": 120,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  // CONEXIONES INTersección Central
-  {
-    "from": "nodo-interseccion-1",
-    "to": "nodo-biblioteca",         // Biblioteca
-    "distance": 150,
-    "type": "stairs" as const,
-    "baseWeight": 1.5
-  },
-  {
-    "from": "nodo-interseccion-1",
-    "to": "nodo-auditorio",          // Auditorio
-    "distance": 100,
-    "type": "ramp" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "nodo-interseccion-1",
-    "to": "nodo-aulas-a",            // Contaduría
-    "distance": 90,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "nodo-interseccion-1",
-    "to": "nodo-cafeteria",          // Cafetería
-    "distance": 250,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "nodo-interseccion-1",
-    "to": "nodo-laboratorios",       // Electrónica
-    "distance": 180,
-    "type": "steep" as const,
-    "baseWeight": 2.0
-  },
-  // CONEXIONES ZONA ACADÉMICA (norte)
-  {
-    "from": "nodo-auditorio",
-    "to": "nodo-informatica",        // Informática
-    "distance": 120,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "nodo-informatica",
-    "to": "nodo-aeronautica",        // Aeronáutica
-    "distance": 70,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "nodo-informatica",
-    "to": "nodo-sistemas",           // Sistemas
-    "distance": 80,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "nodo-sistemas",
-    "to": "nodo-industrial",         // Industrial
-    "distance": 60,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  // RUTAS PARA SILLA DE RUEDAS (alternativas sin escaleras)
-  {
-    "from": "nodo-interseccion-1",
-    "to": "nodo-biblioteca",
-    "distance": 200,                 // Ruta más larga pero accesible
-    "type": "ramp" as const,
-    "baseWeight": 1.0
-  },
-  // RUTAS PARA AUTOS
-  {
-    "from": "entrada-vehicular",
-    "to": "nodo-estacionamiento",
-    "distance": 50,
-    "type": "road" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "nodo-estacionamiento",
-    "to": "nodo-biblioteca",
-    "distance": 180,
-    "type": "road" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "nodo-estacionamiento",
-    "to": "nodo-cafeteria",
-    "distance": 220,
-    "type": "road" as const,
-    "baseWeight": 1.0
-  },
-  // CONEXIONES SUR
-  {
-    "from": "nodo-cafeteria",
-    "to": "nodo-quimica",            // Química
-    "distance": 100,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  // CONEXIONES CRUZADAS
-  {
-    "from": "nodo-rectoria",
-    "to": "nodo-biblioteca",
-    "distance": 120,
-    "type": "sidewalk" as const,
-    "baseWeight": 1.0
-  },
-  {
-    "from": "nodo-aulas-a",
-    "to": "nodo-auditorio",
-    "distance": 110,
-    "type": "ramp" as const,
-    "baseWeight": 1.0
-  }
-]
-};
+// Importar datos actualizados del campus
+import campusBuildingsData from '@/data/campus-buildings.json'
+import graphData from '@/data/graph-nodes.json'
 const router = useRouter();
 
 // ======================
 // ESTADO REACTIVO
 // ======================
 const mobilityType = ref<'walking' | 'wheelchair' | 'car'>('walking');
-const selectedStart = ref<string>('entrada-principal');
-const selectedEnd = ref<string>('nodo-biblioteca');
+const selectedStart = ref<string>('puerta-1');
+const selectedEnd = ref<string>('biblioteca');
 const calculatedRoute = ref<PathResult | null>(null);
 const isLoading = ref(false);
 const showRouteDetails = ref(false);
@@ -697,7 +280,24 @@ const showRouteDetails = ref(false);
 const campusBuildings = ref(campusBuildingsData.buildings);
 const navigationGraph = ref<Graph>({
   nodes: graphData.nodes,
-  edges: graphData.edges
+  edges: graphData.edges.flatMap(edge => [
+    // Arista original
+    {
+      from: edge.from,
+      to: edge.to,
+      distance: edge.distance,
+      type: edge.type as "ramp" | "sidewalk" | "road" | "stairs" | "steep" | "main-path",
+      baseWeight: edge.baseWeight || 1.0
+    },
+    // Arista inversa (grafo no dirigido)
+    {
+      from: edge.to,
+      to: edge.from,
+      distance: edge.distance,
+      type: edge.type as "ramp" | "sidewalk" | "road" | "stairs" | "steep" | "main-path",
+      baseWeight: edge.baseWeight || 1.0
+    }
+  ])
 });
 
 // ======================
@@ -727,12 +327,59 @@ const endOptions = computed(() => {
 // MÉTODOS
 // ======================
 const calculateRoute = async () => {
-  console.log('=== CALCULANDO RUTA ===');
-  console.log('Start:', selectedStart.value);
-  console.log('End:', selectedEnd.value);
-  console.log('Mobility:', mobilityType.value);
-  console.log('Graph nodes:', navigationGraph.value.nodes.length);
-  console.log('Graph edges:', navigationGraph.value.edges.length);
+  console.log('🚀 CALCULANDO RUTA:', {
+    start: selectedStart.value,
+    end: selectedEnd.value,
+    mobility: mobilityType.value,
+    totalNodos: navigationGraph.value.nodes.length,
+    totalAristas: navigationGraph.value.edges.length
+  });
+  //AQUI
+   // Usar algoritmo A* para encontrar ruta óptima
+console.log('📡 Llamando a findPathAStar...');
+const route = findPathAStar(
+  navigationGraph.value,
+  selectedStart.value,
+  selectedEnd.value,
+  mobilityType.value
+);
+
+console.log('📦 Resultado CRÍTICO de findPathAStar:', {
+  esNull: route === null,
+  esUndefined: route === undefined,
+  tipo: typeof route,
+  valor: route
+});
+
+// AGREGAR ESTA VERIFICACIÓN EXPLÍCITA
+if (route === null || route === undefined) {
+  console.error('⚠️ findPathAStar retornó null/undefined a pesar del éxito en logs');
+  console.log('🔍 Verificando si hay error silencioso en reconstructPath...');
+  calculatedRoute.value = null;
+} else if (route && route.nodes && route.nodes.length > 0) {
+  console.log('🎉 RUTA VÁLIDA RECIBIDA DE findPathAStar');
+  calculatedRoute.value = route;
+  showRouteDetails.value = true;
+  
+  // LOGS DETALLADOS
+  console.log('✅ RUTA CALCULADA CON ÉXITO');
+  console.log('📊 Nodos en ruta:', route.nodes.length);
+  console.log('📊 Pasos en ruta:', route.steps.length);
+  console.log('📊 Distancia total:', route.totalDistance, 'metros');
+  console.log('📍 Ruta completa IDs:', route.path);
+  
+  // Verificar inmediatamente si RouteMap lo verá
+  console.log('🗺️ Estado para RouteMap:', {
+    calculatedRouteExiste: !!calculatedRoute.value,
+    nodes: calculatedRoute.value?.nodes?.length,
+    steps: calculatedRoute.value?.steps?.length
+  });
+} else {
+  console.error('❌ Ruta inválida de findPathAStar:', route);
+  calculatedRoute.value = null;
+}
+
+  //AQUI
   if (!selectedStart.value || !selectedEnd.value) {
     console.error('Seleccione origen y destino');
     return;
@@ -746,28 +393,77 @@ const calculateRoute = async () => {
   isLoading.value = true;
   
   try {
+    // Verificación de nodos en grafo
+    console.log('=== VERIFICANDO NODOS EN GRAFO ===');
+    console.log('¿Existe nodo inicio en grafo?', navigationGraph.value.nodes.some(n => n.id === selectedStart.value));
+    console.log('¿Existe nodo fin en grafo?', navigationGraph.value.nodes.some(n => n.id === selectedEnd.value));
+
     // Usar algoritmo A* para encontrar ruta óptima
+    console.log('📡 Llamando a findPathAStar...');
     const route = findPathAStar(
-      
       navigationGraph.value,
       selectedStart.value,
       selectedEnd.value,
       mobilityType.value
     );
 
+    console.log('📦 Resultado de findPathAStar:', route ? '✅ RUTA ENCONTRADA' : '❌ RUTA NO ENCONTRADA');
+
     if (route) {
       calculatedRoute.value = route;
       showRouteDetails.value = true;
-      console.log('Ruta calculada:', route);
+      
+      // LOGS DETALLADOS DE LA RUTA
+      console.log('🎉 ✅ RUTA CALCULADA CON ÉXITO');
+      console.log('📊 Nodos en ruta:', route.nodes.length);
+      console.log('📊 Pasos en ruta:', route.steps.length);
+      console.log('📊 Distancia total:', route.totalDistance, 'metros');
+      console.log('📍 Primeros 3 nodos:', route.nodes.slice(0, 3).map(n => `${n.name} (${n.id})`));
+      console.log('📍 Últimos 3 nodos:', route.nodes.slice(-3).map(n => `${n.name} (${n.id})`));
+      
+      // Verificar que RouteMap recibirá los datos
+      console.log('🗺️ ¿RouteMap puede mostrar?', {
+        tieneRuta: !!calculatedRoute.value,
+        tieneNodos: calculatedRoute.value?.nodes?.length > 0,
+        tienePasos: calculatedRoute.value?.steps?.length > 0
+      });
+      
+      // Forzar actualización del mapa
+      setTimeout(() => {
+        console.log('🔄 Forzando actualización del mapa...');
+        // Esto activará el watcher de RouteMap
+        calculatedRoute.value = { ...route };
+      }, 100);
     } else {
-      console.error('No se encontró ruta entre los puntos seleccionados');
+      console.error('❌ No se encontró ruta entre los puntos seleccionados');
+      
+      // Debug adicional
+      console.log('🔍 === ANÁLISIS DE CONEXIONES ===');
+      const edgesFromStart = navigationGraph.value.edges.filter(e => 
+        e.from === selectedStart.value || e.to === selectedStart.value
+      );
+      const edgesToEnd = navigationGraph.value.edges.filter(e => 
+        e.from === selectedEnd.value || e.to === selectedEnd.value
+      );
+      console.log('🔗 Aristas conectadas a inicio:', edgesFromStart.length);
+      console.log('🔗 Aristas conectadas a fin:', edgesToEnd.length);
+      console.log('🌐 ¿Hay conexión?', {
+        tieneInicio: edgesFromStart.length > 0,
+        tieneFin: edgesToEnd.length > 0,
+        mismaArista: edgesFromStart.some(e => 
+          e.from === selectedEnd.value || e.to === selectedEnd.value
+        )
+      });
+      
       calculatedRoute.value = null;
     }
   } catch (error) {
-    console.error('Error calculando ruta:', error);
+    console.error('💥 Error calculando ruta:', error);
+    //console.error('Stack trace:', error.stack);
     calculatedRoute.value = null;
   } finally {
     isLoading.value = false;
+    console.log('🏁 Estado final - isLoading:', isLoading.value, 'hasRoute:', !!calculatedRoute.value);
   }
 };
 
@@ -786,8 +482,8 @@ const startNavigation = () => {
     
     // Pasar la ruta completa como parámetro
     router.push({
-      path: "/app/navigation/route",
-      query: {
+        name: 'LiveNavigation',
+        query: {
         from: selectedStart.value,
         to: selectedEnd.value,
         mobility: mobilityType.value,
