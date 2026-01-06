@@ -335,49 +335,7 @@ const calculateRoute = async () => {
     totalAristas: navigationGraph.value.edges.length
   });
   //AQUI
-   // Usar algoritmo A* para encontrar ruta óptima
-console.log('📡 Llamando a findPathAStar...');
-const route = findPathAStar(
-  navigationGraph.value,
-  selectedStart.value,
-  selectedEnd.value,
-  mobilityType.value
-);
-
-console.log('📦 Resultado CRÍTICO de findPathAStar:', {
-  esNull: route === null,
-  esUndefined: route === undefined,
-  tipo: typeof route,
-  valor: route
-});
-
-// AGREGAR ESTA VERIFICACIÓN EXPLÍCITA
-if (route === null || route === undefined) {
-  console.error('⚠️ findPathAStar retornó null/undefined a pesar del éxito en logs');
-  console.log('🔍 Verificando si hay error silencioso en reconstructPath...');
-  calculatedRoute.value = null;
-} else if (route && route.nodes && route.nodes.length > 0) {
-  console.log('🎉 RUTA VÁLIDA RECIBIDA DE findPathAStar');
-  calculatedRoute.value = route;
-  showRouteDetails.value = true;
-  
-  // LOGS DETALLADOS
-  console.log('✅ RUTA CALCULADA CON ÉXITO');
-  console.log('📊 Nodos en ruta:', route.nodes.length);
-  console.log('📊 Pasos en ruta:', route.steps.length);
-  console.log('📊 Distancia total:', route.totalDistance, 'metros');
-  console.log('📍 Ruta completa IDs:', route.path);
-  
-  // Verificar inmediatamente si RouteMap lo verá
-  console.log('🗺️ Estado para RouteMap:', {
-    calculatedRouteExiste: !!calculatedRoute.value,
-    nodes: calculatedRoute.value?.nodes?.length,
-    steps: calculatedRoute.value?.steps?.length
-  });
-} else {
-  console.error('❌ Ruta inválida de findPathAStar:', route);
-  calculatedRoute.value = null;
-}
+ 
 
   //AQUI
   if (!selectedStart.value || !selectedEnd.value) {

@@ -86,14 +86,13 @@ const initMap = async () => {
 const drawMapElements = () => {
   // ✅ VALIDACIÓN TEMPRANA - debe estar ANTES de los console.log
   if (!map || !L || !props.route || !props.route.nodes || !Array.isArray(props.route.nodes)) {
-  return;
+    return;
   }
   
-  // ✅ Ahora podemos mostrar logs porque SABEMOS que route existe
-  console.log("🔍 [RouteMap DEBUG] drawMapElements llamado");
-  console.log("props.route:", props.route);
-  console.log("props.route?.nodes:", props.route.nodes);
-  console.log("props.route?.nodes.length:", props.route.nodes.length);
+  // ✅ LOGS OPTIMIZADOS: Solo en desarrollo y de forma concisa
+  if (import.meta.env.DEV) {
+    console.log(`🗺️ RouteMap: Dibujando ruta de ${props.route.nodes.length} nodos`);
+  }
   
   // Limpiar capas anteriores
   markersLayer.clearLayers();
@@ -101,12 +100,13 @@ const drawMapElements = () => {
   
   // Si hay ruta, dibujarla
   if (props.route.nodes.length > 0) {
-    console.log("✅ Llamando drawRoute y drawNodes");
+    if (import.meta.env.DEV) {
+      console.log("✅ Ruta visualizada");
+    }
     drawRoute();
     drawNodes();
-  } else {
-    console.log("⚠️ props.route.nodes está vacío");
   }
+  // else: no hay log, se omite silenciosamente
 };
 
 // Dibujar nodos como marcadores
