@@ -84,15 +84,16 @@ const initMap = async () => {
 
 // Dibujar elementos en el mapa
 const drawMapElements = () => {
+  // ✅ VALIDACIÓN TEMPRANA - debe estar ANTES de los console.log
+  if (!map || !L || !props.route || !props.route.nodes || !Array.isArray(props.route.nodes)) {
+  return;
+  }
+  
+  // ✅ Ahora podemos mostrar logs porque SABEMOS que route existe
   console.log("🔍 [RouteMap DEBUG] drawMapElements llamado");
   console.log("props.route:", props.route);
-  console.log("props.route?.nodes:", props.route?.nodes);
-  console.log("props.route?.nodes.length:", props.route?.nodes?.length);
-  
-  if (!map || !L || !props.route || !props.route.nodes) {
-    console.log("❌ Condición falló, retornando");
-    return;
-  }
+  console.log("props.route?.nodes:", props.route.nodes);
+  console.log("props.route?.nodes.length:", props.route.nodes.length);
   
   // Limpiar capas anteriores
   markersLayer.clearLayers();

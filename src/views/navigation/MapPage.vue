@@ -429,11 +429,11 @@ if (route === null || route === undefined) {
       });
       
       // Forzar actualización del mapa
-      setTimeout(() => {
-        console.log('🔄 Forzando actualización del mapa...');
+      //setTimeout(() => {
+        //console.log('🔄 Forzando actualización del mapa...');
         // Esto activará el watcher de RouteMap
-        calculatedRoute.value = { ...route };
-      }, 100);
+        //calculatedRoute.value = { ...route };
+      //}, 100);
     } else {
       console.error('❌ No se encontró ruta entre los puntos seleccionados');
       
